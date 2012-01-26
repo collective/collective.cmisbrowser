@@ -1,0 +1,32 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:resource
+     name="collective.cmisbrowser.icon.png"
+     image="static/CMISBrowser.png"
+     />
+
+  <browser:page
+     for="zope.app.container.interfaces.IAdding"
+     name="collective.cmisbrowser.CMISBrowser"
+     class=".forms.CMISBrowserAddForm"
+     permission="collective.cmisbrowser.AddCMISBrowser"
+     />
+
+  <browser:page
+     for="..interfaces.ICMISBrowser"
+     name="edit"
+     class=".forms.CMISBrowserEditForm"
+     permission="cmf.ModifyPortalContent"
+     />
+
+  <browser:page
+     for="..interfaces.ICMISFolderBrowser"
+     name="view"
+     class=".views.CMISFolderBrowser"
+     template="templates/cmisfolderbrowser.pt"
+     permission="zope2.View"
+     />
+
+</configure>

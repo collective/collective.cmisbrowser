@@ -1,8 +1,27 @@
 <configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:grok="http://namespaces.zope.org/grok">
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:five="http://namespaces.zope.org/five"
+   xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
-  <include package="five.grok" />
-  <grok:grok package="." />
+  <!-- Include dependencies. Define CMF permisions. -->
+  <include package="Products.CMFCore" />
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <permission
+     id="collective.cmisbrowser.AddCMISBrowser"
+     title="collective.cmisbrowser: Add CMIS Browser"
+     />
+
+  <include package=".content" />
+  <include package=".browser" />
+
+  <genericsetup:registerProfile
+     name="default"
+     title="collective.cmisbrowser"
+     directory="profiles/default"
+     description="Extension profile for collective.cmisbrowser."
+     provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
 
 </configure>

@@ -4,6 +4,8 @@
 # $Id$
 
 
+from Products.Five.browser import BrowserView
 
-class CMISBrowser:
+
+class CMISFolderBrowser(BrowserView):
     pass

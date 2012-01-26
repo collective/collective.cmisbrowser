@@ -1,0 +1,18 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:five="http://namespaces.zope.org/five">
+
+  <five:registerClass
+     class=".cmisbrowser.CMISBrowser"
+     meta_type="CMIS Browser"
+     permission="collective.cmisbrowser.AddCMISBrowser"
+     addview="collective.cmisbrowser.CMISBrowser"
+     icon="collective.cmisbrowser.icon.png"
+     />
+
+  <utility
+     component=".cmisbrowser.CMISBrowserFactory"
+     name="collective.cmisbrowser.CMISBrowser"
+     />
+
+</configure>
