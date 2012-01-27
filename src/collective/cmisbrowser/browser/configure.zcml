@@ -22,7 +22,7 @@
      />
 
   <browser:page
-     for="..interfaces.ICMISFolderBrowser"
+     for="..interfaces.ICMISBrowserAware"
      name="view"
      class=".views.CMISFolderBrowser"
      template="templates/cmisfolderbrowser.pt"

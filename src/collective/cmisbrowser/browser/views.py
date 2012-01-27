@@ -3,9 +3,10 @@
 # See also LICENSE.txt
 # $Id$
 
-
 from Products.Five.browser import BrowserView
 
 
 class CMISFolderBrowser(BrowserView):
-    pass
+
+    def __call__(self):
+        return self.context.aq_inner.folder_tabular_view()

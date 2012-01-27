@@ -15,7 +15,8 @@
  <property name="allowed_content_types" />
  <property name="allow_discussion">False</property>
 
- <alias from="(Default)" to="@@view"/>
+ <!--Disable default alias to get BrowserPublisher working. -->
+ <alias from="(Default)" to=""/>
  <alias from="edit" to="@@edit"/>
  <alias from="view" to="@@view"/>
 

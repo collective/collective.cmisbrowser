@@ -5,7 +5,13 @@
   <body>
     <div metal:fill-slot="main">
       <tal:main-macro metal:define-macro="main">
-        <div>This is a browser browsing</div>
+        <div tal:replace="structure provider:plone.abovecontent" />
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+        <h1 tal:content="context/Title"></h1>
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+        <div tal:replace="structure provider:plone.belowcontent" />
       </tal:main-macro>
     </div>
   </body>

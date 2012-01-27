@@ -32,5 +32,8 @@ setup(name='collective.cmisbrowser',
       zip_safe=False,
       install_requires=[
           "setuptools",
-      ],
+          "plone.app.content",
+          "plone.app.form",
+          "suds",
+          ],
       )

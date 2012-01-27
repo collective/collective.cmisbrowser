@@ -3,9 +3,3 @@
 # See also LICENSE.txt
 # $Id$
 
-
-from OFS.SimpleItem import SimpleItem
-
-
-class CMISTool(SimpleItem):
-    meta_type = 'CMIS Tool'

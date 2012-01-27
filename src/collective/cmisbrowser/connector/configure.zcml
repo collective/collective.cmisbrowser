@@ -1,0 +1,10 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+
+  <adapter
+     factory=".soap.SOAPConnector"
+     for="..interfaces.ICMISSettings"
+     provides="..interfaces.ICMISConnector"
+     />
+
+</configure>
