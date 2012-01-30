@@ -73,7 +73,7 @@ class ICMISConnector(Interface):
     """
 
 
-class ICMISDocument(Interface):
+class ICMISContent(IBrowserPublisher):
     """A browsed document.
     """
     portal_type = Attribute(u"Portal content name to be displayed")
@@ -129,7 +129,16 @@ class ICMISDocument(Interface):
         """
 
 
-class ICMISFolder(IBrowserPublisher, ICMISDocument):
+class ICMISDocument(ICMISContent):
+    """A content.
+    """
+
+    def CMISStreamId():
+        """Return content CMIS stream identifier.
+        """
+
+
+class ICMISFolder(ICMISContent):
     """A browsed folder.
     """
 
@@ -139,6 +148,20 @@ class ICMISFolder(IBrowserPublisher, ICMISDocument):
         detail.
         (Plone API).
         """
+
+
+class ICMISStaleResult(Interface):
+    """Represent an unmodified result from CMIS.
+    """
+
+
+class ICMISFileResult(Interface):
+    """Represent file data download from CMIS.
+    """
+    filename = Attribute('filename')
+    length = Attribute('length')
+    stream = Attribute('stream')
+    mimetype = Attribute('mimetype')
 
 
 class ICMISBrowser(IBrowserPublisher, INameFromTitle, ICMISSettings):

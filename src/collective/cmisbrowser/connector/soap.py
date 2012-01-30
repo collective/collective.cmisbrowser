@@ -8,7 +8,7 @@ import subprocess
 import urllib2
 
 from collective.cmisbrowser.interfaces import ICMISConnector, CMISConnectorError
-from collective.cmisbrowser.cmis import create_cmis_object
+from collective.cmisbrowser.cmis import create_cmis_object, CMISFileResult
 from zope.interface import implements
 from zope.cachedescriptors.property import CachedProperty
 
@@ -48,7 +48,7 @@ def soap_error(wrapped):
                     raise NotFound()
             raise SOAPConnectorError(
                 error.fault.faultstring,
-                indent_xml(error.document.plain()))
+                error.document.str())
 
     return wrapper
 
@@ -153,6 +153,17 @@ class SOAPConnector(object):
                 filter='*'))
 
     @soap_error
+    def get_object_content(self, cmis_object):
+        content = self._client.object.getContentStream(
+            repositoryId=self._repository_id,
+            objectId=cmis_object.CMISId())
+        return CMISFileResult(
+            filename=content.filename,
+            length=content.length,
+            stream=content.stream,
+            mimetype=content.mimeType)
+
+    @soap_error
     def start(self):
         if self._repository_id is not None:
             return
@@ -179,11 +190,11 @@ class SOAPConnector(object):
                 self._settings.repository_path)
         else:
             self._root = self.get_object_by_id(
-                self.repository_info().rootFolderId)
+                self.get_repository_info().rootFolderId)
         return self._root
 
     @soap_error
-    def repository_info(self):
+    def get_repository_info(self):
         if self._repository_info is None:
             self._repository_info = self._client.repository.getRepositoryInfo(
                 self._repository_id)

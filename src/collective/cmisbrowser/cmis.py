@@ -12,19 +12,51 @@ from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 from Globals import InitializeClass
 
+from collective.cmisbrowser.interfaces import ICMISStaleResult
+from collective.cmisbrowser.interfaces import ICMISContent, ICMISFileResult
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder
 from zope.interface import implements
+from zope.datetime import time
 
 
 def to_zope_datetime(datetime):
     return DateTime(*datetime.timetuple()[:6])
 
 
-class CMISDocument(Implicit):
+class CMISStaleResult(Implicit):
+    """An unchanged file result from CMIS.
+    """
+    implements(ICMISStaleResult)
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
+
+    def __init__(self):
+        pass
+
+InitializeClass(CMISStaleResult)
+
+
+class CMISFileResult(Implicit):
+    """File content as download from CMIS.
+    """
+    implements(ICMISFileResult)
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(View)
+
+    def __init__(self, filename, length, stream, mimetype):
+        self.filename = filename
+        self.length = length
+        self.stream = stream
+        self.mimetype = mimetype
+
+InitializeClass(CMISFileResult)
+
+
+class CMISContent(Implicit):
     """Refer a Document in a CMIS repositories.
     Follows the Plone API as much as possible.
     """
-    implements(ICMISDocument)
+    implements(ICMISContent)
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
     isPrincipiaFolderish = 0
@@ -37,6 +69,32 @@ class CMISDocument(Implicit):
         self._properties = properties
         self._connector = connector
 
+    def refreshedBrowserDefault(self, request):
+        return aq_inner(self), ('@@view',)
+
+    def browserDefault(self, request):
+        # Support for IF-MODIFIED-SINCE
+        header = request.environ.get('HTTP_IF_MODIFIED_SINCE', None)
+        if header is not None:
+            header = header.split(';')[0]
+            try:
+                mod_since = long(time(header))
+            except:
+                mod_since = None
+            else:
+                last_mod = self.modified()
+                if last_mod is not None:
+                    last_mod = long(last_mod)
+                    if last_mod > 0 and last_mod <= mod_since:
+                        return CMISStaleResult().__of__(self), ('@@view',)
+        return self.refreshedBrowserDefault(request)
+
+    def publishTraverse(self, request, name):
+        # Regular CMIS content are not traversable in CMIS.
+        default = DefaultPublishTraverse(self, request)
+        return default.publishTraverse(request, name)
+
+    security.declareProtected(View, 'getId')
     def getId(self):
         path = self._properties.get('cmis:path')
         if path is not None:
@@ -44,12 +102,9 @@ class CMISDocument(Implicit):
             if identifier:
                 return identifier
             # The root object must have an ID of None.
-            return None
-        filename = self._properties.get('cmis:contentStreamFileName')
-        if filename is not None:
-            return filename
         return None
 
+    security.declareProtected(View, 'getObject')
     def getObject(self):
         # Some view expect to have catalog brains
         return aq_inner(self)
@@ -72,10 +127,6 @@ class CMISDocument(Implicit):
     security.declareProtected(View, 'Description')
     def Description(self):
         return ''
-
-    security.declareProtected(View, 'Format')
-    def Format(self):
-        return self._properties.get('cmis:cmis:contentStreamFileName', 'text/html')
 
     security.declareProtected(View, 'Creator')
     def Creator(self):
@@ -106,6 +157,10 @@ class CMISDocument(Implicit):
     def ExpirationDate(self):
         return 'None'
 
+    security.declareProtected(View, 'Format')
+    def Format(self):
+        return 'text/html'
+
     security.declareProtected(View, 'Subject')
     def Subject(self):
         return tuple()
@@ -115,10 +170,39 @@ class CMISDocument(Implicit):
         return self.portal_type
 
 
+InitializeClass(CMISContent)
+
+
+
+class CMISDocument(CMISContent):
+    implements(ICMISDocument)
+    security = ClassSecurityInfo()
+
+    security.declarePublic('portal_type')
+    portal_type = 'CMIS Document'
+    portal_icon = '++resource++collective.cmisbrowser.document.png'
+
+    def refreshedBrowserDefault(self, request):
+        result = self._connector.get_object_content(aq_inner(self))
+        return result.__of__(self), ('@@view',)
+
+    def getId(self):
+        identifier = self._properties.get('cmis:contentStreamFileName')
+        if identifier is None:
+            identifier = super(CMISDocument, self).getId()
+        return identifier
+
+    def Format(self):
+        return self._properties.get('cmis:contentStreamFileName', 'text/html')
+
+    def CMISStreamId(self):
+        return self._properties['cmis:contentStreamId']
+
+
 InitializeClass(CMISDocument)
 
 
-class CMISFolder(CMISDocument):
+class CMISFolder(CMISContent):
     implements(ICMISFolder)
     security = ClassSecurityInfo()
     isPrincipiaFolderish = 1
@@ -127,17 +211,13 @@ class CMISFolder(CMISDocument):
     portal_type = 'CMIS Folder'
     portal_icon = '++resource++collective.cmisbrowser.folder.png'
 
-    def browserDefault(self, request):
-        return aq_inner(self), ('@@view',)
-
     def publishTraverse(self, request, name):
         path = self._properties.get('cmis:path')
         if path:
             path = path.rstrip('/') + '/' + name
             content = self._connector.get_object_by_path(path)
             return content.__of__(aq_inner(self))
-        default = DefaultPublishTraverse(self, request)
-        return default.publishTraverse(request, name)
+        return super(CMISFolder, self).publishTraverse(request, name)
 
     security.declareProtected(View, 'getFolderContents')
     def getFolderContents(self, *args, **kwargs):
@@ -160,7 +240,7 @@ InitializeClass(CMISFolder)
 CMIS_FACTORIES = {
     'cmis:folder': CMISFolder,
     'cmis:document': CMISDocument,
-    'default': CMISDocument}
+    'default': CMISContent}
 
 
 def create_cmis_object(properties, connector):

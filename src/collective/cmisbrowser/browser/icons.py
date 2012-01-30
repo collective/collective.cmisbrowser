@@ -9,7 +9,7 @@ from plone.app.layout.icons.interfaces import IContentIcon
 from zope.interface import implements
 
 
-class CMISDocumentIcon(BaseIcon):
+class CMISContentIcon(BaseIcon):
     implements(IContentIcon)
     width = 16
     height = 16

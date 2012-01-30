@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Browser content -->
   <browser:resource
      name="collective.cmisbrowser.icon.png"
      image="static/CMISBrowser.png"
@@ -29,6 +30,7 @@
      permission="zope2.View"
      />
 
+  <!-- CMIS content view -->
   <browser:page
      for="..interfaces.ICMISFolder"
      name="view"
@@ -36,7 +38,21 @@
      permission="zope2.View"
      />
 
-  <!-- Icons -->
+  <browser:page
+     for="..interfaces.ICMISFileResult"
+     name="view"
+     class=".views.CMISFileResultView"
+     permission="zope2.View"
+     />
+
+  <browser:page
+     for="..interfaces.ICMISStaleResult"
+     name="view"
+     class=".views.CMISStaleResultView"
+     permission="zope2.View"
+     />
+
+  <!-- CMIS content icons -->
   <browser:resource
      name="collective.cmisbrowser.document.png"
      image="static/CMISDocument.png"
@@ -50,8 +66,8 @@
   <adapter
      for="*
           zope.publisher.interfaces.browser.IBrowserRequest
-          ..interfaces.ICMISDocument"
-     factory=".icons.CMISDocumentIcon"
+          ..interfaces.ICMISContent"
+     factory=".icons.CMISContentIcon"
      provides="plone.app.layout.icons.interfaces.IContentIcon"
      />
 
