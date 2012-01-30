@@ -3,8 +3,10 @@
 # See also LICENSE.txt
 # $Id$
 
-from collective.cmisbrowser.interfaces import ICMISBrowser
-from collective.cmisbrowser.interfaces import ICMISConnector
+import logging
+
+from collective.cmisbrowser.interfaces import ICMISBrowser, ICMISConnector
+from collective.cmisbrowser.interfaces import CMISConnectorError
 from plone.app.content.item import Item
 from zope.component.factory import Factory
 from zope.publisher.interfaces.browser import IBrowserPublisher
@@ -18,6 +20,22 @@ from ZPublisher.BaseRequest import DefaultPublishTraverse
 _ = MessageFactory('collective.cmisbrowser')
 
 
+logger = logging.getLogger('collective.cmisbrowser')
+
+
+class CMISErrorTraverser(object):
+    # Alternate traverser in case of error. Display an error page.
+    implements(IBrowserPublisher)
+
+    def __init__(self, browser):
+        self.browser = browser
+
+    def browserDefault(self, request):
+        return self.browser, ('@@view',)
+
+    def publishTraverse(self, request, name):
+        return self
+
 
 class CMISTraverser(object):
     implements(IBrowserPublisher)
@@ -25,17 +43,26 @@ class CMISTraverser(object):
     def __init__(self, browser):
         self.browser = browser
         self.connector = browser.connect()
-        self.context = self.connector.start().__of__(browser)
 
     def browserDefault(self, request):
-        return self.context, ('@@view',)
+        try:
+            root = self.connector.start().__of__(self.browser)
+            return root, ('@@view',)
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return self.browser, ('@@view',)
 
     def publishTraverse(self, request, name):
-        path = self.context._properties.get('cmis:path')
-        if path:
-            path = path.rstrip('/') + '/' + name
-            content = self.connector.get_object_by_path(path)
-            return content.__of__(self.context)
+        try:
+            root = self.connector.start().__of__(self.browser)
+            path = root._properties.get('cmis:path')
+            if path:
+                path = path.rstrip('/') + '/' + name
+                content = self.connector.get_object_by_path(path)
+                return content.__of__(root)
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return CMISErrorTraverser(self.browser)
         default = DefaultPublishTraverse(self.browser, request)
         return default.publishTraverse(request, name)
 

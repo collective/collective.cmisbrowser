@@ -8,6 +8,12 @@
         <div tal:replace="structure provider:plone.abovecontent" />
         <div tal:replace="structure provider:plone.abovecontenttitle" />
         <h1 tal:content="context/Title"></h1>
+        <p i18n:translate="">
+          An error happened while connecting to the CMIS Repository.
+        </p>
+        <p i18n:translate="">
+          Please check the settings, and the CMIS server status.
+          <p>
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
         <div tal:replace="structure provider:plone.belowcontentbody" />

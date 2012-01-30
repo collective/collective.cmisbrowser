@@ -22,6 +22,14 @@
      />
 
   <browser:page
+     for="..interfaces.ICMISBrowser"
+     name="view"
+     class=".views.CMISBrowserView"
+     template="templates/cmisbrowserview.pt"
+     permission="zope2.View"
+     />
+
+  <browser:page
      for="..interfaces.ICMISFolder"
      name="view"
      class=".views.CMISFolderView"

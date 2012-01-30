@@ -14,3 +14,7 @@ class CMISFolderView(BrowserView):
         browser = self.context.getCMISBrowser()
         view = getattr(aq_inner(self.context), browser.folder_view)
         return view()
+
+
+class CMISBrowserView(BrowserView):
+    pass

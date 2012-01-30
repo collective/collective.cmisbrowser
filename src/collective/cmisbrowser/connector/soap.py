@@ -3,23 +3,27 @@
 # See also LICENSE.txt
 # $Id$
 
-from collective.cmisbrowser.interfaces import ICMISConnector
+import suds
+import subprocess
+import urllib2
+
+from collective.cmisbrowser.interfaces import ICMISConnector, CMISConnectorError
 from collective.cmisbrowser.cmis import create_cmis_object
 from zope.interface import implements
 from zope.cachedescriptors.property import CachedProperty
-import suds
 
-import subprocess
+from zExceptions import NotFound
 
 
 def indent_xml(xml):
+    # This is used for debug.
     stdout, stderr = subprocess.Popen(
         'xmlindent', stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate(
         input=xml)
     return stdout
 
 
-class SOAPConnectorError(ValueError):
+class SOAPConnectorError(CMISConnectorError):
     pass
 
 
@@ -29,14 +33,22 @@ def soap_error(wrapped):
     def wrapper(self, *args, **kwargs):
         try:
             return wrapped(self, *args, **kwargs)
+        except urllib2.URLError, error:
+            raise SOAPConnectorError(
+                u'Network transport error: %s' % error.args[0][1])
         except suds.transport.TransportError, error:
             raise SOAPConnectorError(
-                u'SOAP Transport Error, HTTP code %d:\n%s' % (
-                    error.httpcode, indent_xml(error.fp.read())))
+                u'HTTP transport error, code %d' % error.httpcode,
+                indent_xml(error.fp.read()))
         except suds.WebFault, error:
+            cmis_error = getattr(error.fault.detail, 'cmisFault', None)
+            if cmis_error is not None:
+                # In case of object not found, we convert to a Zope error
+                if cmis_error.type == 'objectNotFound':
+                    raise NotFound()
             raise SOAPConnectorError(
-                u'SOAP Error:\n%s' % (
-                    indent_xml(error.document.plain())))
+                error.fault.faultstring,
+                indent_xml(error.document.plain()))
 
     return wrapper
 
@@ -46,10 +58,11 @@ def properties_to_dict(properties):
     entry = properties.__dict__
 
     def serialize(value):
-        assert len(value.value) == 1, 'not supported'
-        values.append(
-            (value._propertyDefinitionId,
-             value.value[0]))
+        if len(value.value):
+            assert len(value.value) == 1, 'not supported'
+            values.append(
+                (value._propertyDefinitionId,
+                 value.value[0]))
 
     for key in entry.keys():
         if not key.startswith('property'):
