@@ -8,8 +8,22 @@ from plone.app.content.interfaces import INameFromTitle
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface, Attribute
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 _ = MessageFactory('collective.cmisbrowser')
+_plone = MessageFactory('plone')
+
+
+folder_view_source = SimpleVocabulary([
+        SimpleTerm(
+            value='folder_listing',
+            title=_plone('Standard view')),
+        SimpleTerm(
+            value='folder_summary_view',
+            title=_plone('Summary view')),
+        SimpleTerm(
+            value='folder_tabular_view',
+            title=_plone('Tabular view'))])
 
 
 class ICMISSettings(Interface):
@@ -21,7 +35,7 @@ class ICMISSettings(Interface):
         required=False)
     repository_path = schema.TextLine(
         title=_(u'CMIS start folder path'),
-        description=_(u'Folder in the CMIS repository at which the browser should start'),
+        description=_(u'Folder in the CMIS repository at which the browser should start.'),
         required=False)
     repository_user = schema.TextLine(
         title=_(u'User to access CMIS repository'),
@@ -29,6 +43,12 @@ class ICMISSettings(Interface):
     repository_password = schema.Password(
         title=_(u'Password to access CMIS repository'),
         required=False)
+    folder_view = schema.Choice(
+        title=_(u'Plone template used to render folders'),
+        description=_(u'Select a default plone template to render folders.'),
+        default='folder_listing',
+        source=folder_view_source,
+        required=True)
     proxy = schema.URI(
         title=_(u'HTTP-Proxy to use to access CMIS repository'),
         required=False)
@@ -36,11 +56,6 @@ class ICMISSettings(Interface):
 
 class ICMISConnector(Interface):
     """Connect to a CMIS repository.
-    """
-
-
-class ICMISBrowserAware(IBrowserPublisher):
-    """Object that can become a CMIS folder browser.
     """
 
 
@@ -69,16 +84,57 @@ class ICMISDocument(Interface):
         (Plone API).
         """
 
+    def CreationDate():
+        """Return creation date as an ISO string (or 'None').
+        (Plone API).
+        """
 
-class ICMISFolder(ICMISDocument, ICMISBrowserAware):
+    def ModificationDate():
+        """Return modification date as an ISO string (or 'None').
+        (Plone API).
+        """
+
+    def EffectiveDate():
+        """Return effective date as an ISO string (or 'None').
+        (Plone API).
+        """
+
+    def ExpirationDate():
+        """Return expiration date as an ISO string (or 'None').
+        (Plone API).
+        """
+
+    def Subject():
+        """Return subjects as a tuple of strings.
+        (Plone API).
+        """
+
+    def Type():
+        """Return content type.
+        (Plone API).
+        """
+
+
+class ICMISFolder(IBrowserPublisher, ICMISDocument):
     """A browsed folder.
     """
 
+    def getFolderContents():
+        """Return folder content as a list (or batch) of
+        ICMISDocument. Please refer to the plone script for more
+        detail.
+        (Plone API).
+        """
 
-class ICMISBrowser(ICMISBrowserAware, INameFromTitle, ICMISSettings):
+
+class ICMISBrowser(IBrowserPublisher, INameFromTitle, ICMISSettings):
     """A Browser.
     """
 
     def connect():
         """Return a connector to the current CMIS repository.
+        """
+
+    def getCMISBrowser():
+        """Return self. (Use to get the browser by acquisition).
         """

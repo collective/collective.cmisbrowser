@@ -22,10 +22,9 @@
      />
 
   <browser:page
-     for="..interfaces.ICMISBrowserAware"
+     for="..interfaces.ICMISFolder"
      name="view"
-     class=".views.CMISFolderBrowser"
-     template="templates/cmisfolderbrowser.pt"
+     class=".views.CMISFolderView"
      permission="zope2.View"
      />
 

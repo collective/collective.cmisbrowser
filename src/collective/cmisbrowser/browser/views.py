@@ -3,10 +3,14 @@
 # See also LICENSE.txt
 # $Id$
 
+from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 
 
-class CMISFolderBrowser(BrowserView):
+class CMISFolderView(BrowserView):
 
     def __call__(self):
-        return self.context.aq_inner.folder_tabular_view()
+        # Render the Plone folder view selected in the browser.
+        browser = self.context.getCMISBrowser()
+        view = getattr(aq_inner(self.context), browser.folder_view)
+        return view()

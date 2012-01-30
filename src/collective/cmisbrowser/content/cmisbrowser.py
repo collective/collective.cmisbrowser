@@ -12,6 +12,7 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 
+from Acquisition import aq_inner
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 _ = MessageFactory('collective.cmisbrowser')
@@ -48,10 +49,14 @@ class CMISBrowser(Item):
     repository_path = FieldProperty(ICMISBrowser['repository_path'])
     repository_user = FieldProperty(ICMISBrowser['repository_user'])
     repository_password = FieldProperty(ICMISBrowser['repository_password'])
+    folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
 
     def connect(self):
         return ICMISConnector(self)
+
+    def getCMISBrowser(self):
+        return aq_inner(self)
 
     def browserDefault(self, request):
         return CMISTraverser(self).browserDefault(request)

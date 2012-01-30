@@ -50,6 +50,10 @@ class CMISDocument(Implicit):
             return filename
         return None
 
+    def getObject(self):
+        # Some view expect to have catalog brains
+        return aq_inner(self)
+
     def CMISId(self):
         return self._properties['cmis:objectId']
 
