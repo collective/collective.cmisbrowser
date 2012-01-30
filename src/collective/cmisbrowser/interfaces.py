@@ -5,6 +5,7 @@
 
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from plone.app.content.interfaces import INameFromTitle
+from Products.CMFPlone.interfaces.constrains import IConstrainTypes
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface, Attribute
@@ -164,7 +165,7 @@ class ICMISFileResult(Interface):
     mimetype = Attribute('mimetype')
 
 
-class ICMISBrowser(IBrowserPublisher, INameFromTitle, ICMISSettings):
+class ICMISBrowser(IBrowserPublisher, INameFromTitle, IConstrainTypes, ICMISSettings):
     """A Browser.
     """
 

@@ -91,6 +91,10 @@ class CMISBrowser(Item):
     def publishTraverse(self, request, name):
         return CMISTraverser(self).publishTraverse(request, name)
 
+    def getLocallyAllowedTypes(self):
+        # You don't have the right to add anything here.
+        return []
+
 
 CMISBrowserFactory = Factory(CMISBrowser, title=_(u"Create CMIS Browser"))
 
