@@ -56,4 +56,14 @@ class CMISFolderView(BrowserView):
 
 
 class CMISBrowserView(BrowserView):
-    pass
+
+    def __call__(self):
+        # This is an error page, we don't want to cache it
+        response = self.request.response
+        response.setStatus(502)
+        response.setHeader(
+            'Cache-Control',
+            'no-cache, must-revalidate, post-check=0, pre-check=0')
+        response.setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
+        response.setHeader('Pragma', 'no-cache')
+        return self.index()

@@ -13,7 +13,7 @@
         </p>
         <p i18n:translate="">
           Please check the settings, and the CMIS server status.
-          <p>
+        </p>
         <div tal:replace="structure provider:plone.belowcontenttitle" />
         <div tal:replace="structure provider:plone.abovecontentbody" />
         <div tal:replace="structure provider:plone.belowcontentbody" />
