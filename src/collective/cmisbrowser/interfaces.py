@@ -7,7 +7,7 @@ from zope.publisher.interfaces.browser import IBrowserPublisher
 from plone.app.content.interfaces import INameFromTitle
 from zope import schema
 from zope.i18nmessageid import MessageFactory
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
 
 _ = MessageFactory('collective.cmisbrowser')
 
@@ -47,6 +47,27 @@ class ICMISBrowserAware(IBrowserPublisher):
 class ICMISDocument(Interface):
     """A browsed document.
     """
+    portal_type = Attribute(u"Portal content name to be displayed")
+    portal_icon = Attribute(u"Icon to be used")
+
+    def getId():
+        """Return content identifier in Zope.
+        (Zope API)
+        """
+
+    def CMISId():
+        """Return content CMIS identifier.
+        """
+
+    def Title():
+        """Return content title.
+        (Plone API).
+        """
+
+    def Description():
+        """Return content description.
+        (Plone API).
+        """
 
 
 class ICMISFolder(ICMISDocument, ICMISBrowserAware):

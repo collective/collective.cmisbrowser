@@ -31,6 +31,7 @@ class CMISDocument(Implicit):
 
     security.declarePublic('portal_type')
     portal_type = 'CMIS Document'
+    portal_icon = '++resource++collective.cmisbrowser.document.png'
 
     def __init__(self, properties, connector):
         self._properties = properties
@@ -120,6 +121,7 @@ class CMISFolder(CMISDocument):
 
     security.declarePublic('portal_type')
     portal_type = 'CMIS Folder'
+    portal_icon = '++resource++collective.cmisbrowser.folder.png'
 
     def browserDefault(self, request):
         return aq_inner(self), ('@@view',)

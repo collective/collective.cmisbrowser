@@ -29,4 +29,23 @@
      permission="zope2.View"
      />
 
+  <!-- Icons -->
+  <browser:resource
+     name="collective.cmisbrowser.document.png"
+     image="static/CMISDocument.png"
+     />
+
+  <browser:resource
+     name="collective.cmisbrowser.folder.png"
+     image="static/CMISFolder.png"
+     />
+
+  <adapter
+     for="*
+          zope.publisher.interfaces.browser.IBrowserRequest
+          ..interfaces.ICMISDocument"
+     factory=".icons.CMISDocumentIcon"
+     provides="plone.app.layout.icons.interfaces.IContentIcon"
+     />
+
 </configure>
