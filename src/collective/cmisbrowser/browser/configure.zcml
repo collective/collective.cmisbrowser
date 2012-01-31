@@ -15,6 +15,12 @@
      permission="collective.cmisbrowser.AddCMISBrowser"
      />
 
+  <adapter
+     for="zope.app.container.interfaces.IAdding"
+     factory=".forms.DefaultTitleAdapter"
+     provides="plone.app.content.interfaces.INameFromTitle"
+     />
+
   <browser:page
      for="..interfaces.ICMISBrowser"
      name="edit"
@@ -82,6 +88,12 @@
   <adapter
      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
      factory=".settings.CMISSettingsAdapter"
+     provides="..interfaces.ICMISSettings"
+     />
+
+  <adapter
+     for="*"
+     factory=".settings.default_cmis_settings"
      provides="..interfaces.ICMISSettings"
      />
 

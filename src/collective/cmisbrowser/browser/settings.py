@@ -5,10 +5,11 @@
 
 from App.config import getConfiguration
 from Products.CMFCore.utils import getToolByName
+
 from plone.app.controlpanel.form import ControlPanelForm
 from zope.formlib import form
 from zope.i18nmessageid import MessageFactory
-from zope.interface import implements
+from zope.interface import implements, implementer
 
 from collective.cmisbrowser.interfaces import ICMISSettings
 
@@ -56,3 +57,9 @@ class CMISSettingsAdapter(object):
     repository_password = configurable_string('repository_password')
     folder_view = configurable_string('folder_view')
     proxy = configurable_string('proxy')
+
+
+@implementer(ICMISSettings)
+def default_cmis_settings(context):
+    portal = getToolByName(context, 'portal_url').getPortalObject()
+    return ICMISSettings(portal)

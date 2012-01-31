@@ -1,9 +1,10 @@
-# Collective CMISBrowser
-# Sylvain Viollon <sylvain@infrae.com>, 2012.
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2012-01-31 10:18+0000\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-01-31 16:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +21,15 @@ msgstr ""
 msgid "A CMIS content browser"
 msgstr ""
 
-#: ./browser/forms.py:16
+#: ./profiles/default/types/CMIS_Document.xml
+msgid "A CMIS content document"
+msgstr ""
+
+#: ./profiles/default/types/CMIS_Folder.xml
+msgid "A CMIS content folder"
+msgstr ""
+
+#: ./browser/forms.py:19
 msgid "Add a CMIS Browser"
 msgstr ""
 
@@ -30,6 +39,18 @@ msgstr ""
 
 #: ./profiles/default/types/CMIS_Browser.xml
 msgid "CMIS Browser"
+msgstr ""
+
+#: ./profiles/default/types/CMIS_Document.xml
+msgid "CMIS Document"
+msgstr ""
+
+#: ./profiles/default/types/CMIS_Folder.xml
+msgid "CMIS Folder"
+msgstr ""
+
+#: ./browser/settings.py:22
+msgid "CMIS default settings"
 msgstr ""
 
 #: ./interfaces.py:47
@@ -48,7 +69,11 @@ msgstr ""
 msgid "Create CMIS Browser"
 msgstr ""
 
-#: ./browser/forms.py:26
+#: ./browser/settings.py:21
+msgid "Default settings used by every CMIS Browser in the site."
+msgstr ""
+
+#: ./browser/forms.py:37
 msgid "Edit CMIS Browser"
 msgstr ""
 
@@ -74,6 +99,10 @@ msgstr ""
 
 #: ./interfaces.py:63
 msgid "Select a default plone template to render folders."
+msgstr ""
+
+#: ./browser/settings.py:20
+msgid "Site wide default settings for CMIS connections"
 msgstr ""
 
 #: ./interfaces.py:56
