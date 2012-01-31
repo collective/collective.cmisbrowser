@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<object name="portal_properties" meta_type="Plone Properties Tool">
+ <object name="cmisbrowser_properties" meta_type="Plone Property Sheet" purge="False">
+  <property name="title">CMISBrowser properties</property>
+  <property name="repository_url" type="string" purge="False"></property>
+  <property name="repository_name" type="string" purge="False"></property>
+  <property name="repository_path" type="string" purge="False"></property>
+  <property name="repository_user" type="string" purge="False"></property>
+  <property name="repository_password" type="string" purge="False"></property>
+  <property name="folder_view" type="string" purge="False"></property>
+  <property name="proxy" type="string" purge="False"></property>
+ </object>
+</object>

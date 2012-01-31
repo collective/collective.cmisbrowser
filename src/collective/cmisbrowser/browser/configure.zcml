@@ -71,4 +71,18 @@
      provides="plone.app.layout.icons.interfaces.IContentIcon"
      />
 
+  <!-- Control panel -->
+  <browser:page
+     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+     name="cmis-settings-controlpanel"
+     class=".settings.CMISSettings"
+     permission="cmf.ManagePortal"
+     />
+
+  <adapter
+     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+     factory=".settings.CMISSettingsAdapter"
+     provides="..interfaces.ICMISSettings"
+     />
+
 </configure>
