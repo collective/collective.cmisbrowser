@@ -1,0 +1,82 @@
+# Collective CMISBrowser
+# Sylvain Viollon <sylvain@infrae.com>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: 2012-01-31 10:18+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: collective.cmisbrowser\n"
+
+#: ./profiles/default/types/CMIS_Browser.xml
+msgid "A CMIS content browser"
+msgstr ""
+
+#: ./browser/forms.py:16
+msgid "Add a CMIS Browser"
+msgstr ""
+
+#: ./browser/templates/cmisbrowserview.pt:11
+msgid "An error happened while connecting to the CMIS Repository."
+msgstr ""
+
+#: ./profiles/default/types/CMIS_Browser.xml
+msgid "CMIS Browser"
+msgstr ""
+
+#: ./interfaces.py:47
+msgid "CMIS repository URI"
+msgstr ""
+
+#: ./interfaces.py:49
+msgid "CMIS repository name"
+msgstr ""
+
+#: ./interfaces.py:52
+msgid "CMIS start folder path"
+msgstr ""
+
+#: ./content/cmisbrowser.py:99
+msgid "Create CMIS Browser"
+msgstr ""
+
+#: ./browser/forms.py:26
+msgid "Edit CMIS Browser"
+msgstr ""
+
+#: ./interfaces.py:53
+msgid "Folder in the CMIS repository at which the browser should start."
+msgstr ""
+
+#: ./interfaces.py:68
+msgid "HTTP-Proxy to use to access CMIS repository"
+msgstr ""
+
+#: ./interfaces.py:59
+msgid "Password to access CMIS repository"
+msgstr ""
+
+#: ./browser/templates/cmisbrowserview.pt:14
+msgid "Please check the settings, and the CMIS server status."
+msgstr ""
+
+#: ./interfaces.py:62
+msgid "Plone template used to render folders"
+msgstr ""
+
+#: ./interfaces.py:63
+msgid "Select a default plone template to render folders."
+msgstr ""
+
+#: ./interfaces.py:56
+msgid "User to access CMIS repository"
+msgstr ""
+
