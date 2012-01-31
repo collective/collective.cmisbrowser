@@ -3,12 +3,13 @@
 # See also LICENSE.txt
 # $Id$
 
-from zope.publisher.interfaces.browser import IBrowserPublisher
-from plone.app.content.interfaces import INameFromTitle
 from Products.CMFPlone.interfaces.constrains import IConstrainTypes
+
+from plone.app.content.interfaces import INameFromTitle
 from zope import schema
 from zope.i18nmessageid import MessageFactory
-from zope.interface import Interface, Attribute
+from zope.interface import Interface, Attribute, invariant, Invalid
+from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 _ = MessageFactory('collective.cmisbrowser')
@@ -67,6 +68,13 @@ class ICMISSettings(Interface):
     proxy = schema.URI(
         title=_(u'HTTP-Proxy to use to access CMIS repository'),
         required=False)
+
+    @invariant
+    def validate_user_and_password(data):
+        if data.repository_user and not data.repository_password:
+            raise Invalid(_(u'Username specified, but password missing.'))
+        if data.repository_password and not data.repository_user:
+            raise Invalid(_(u'Password specified, but username missing.'))
 
 
 class ICMISConnector(Interface):

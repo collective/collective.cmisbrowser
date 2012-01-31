@@ -22,17 +22,21 @@ A *CMIS Browser* provide you with the following options:
 - ``repository_url``: URL to the connected `CMIS`_ repository,
 
 - ``repository_name``: Name of the repository to use at the connected
-  URL (if more than one is available),
+  URL. Required if more than one repository is available,
 
-- ``repository_path``: Sub path in the repository to start browsing at,
+- ``repository_path``: Path in the repository to use as root for the
+  Browser. If it is not specified, the root of the repository will be
+  used,
 
-- ``repository_user``: Username used to authenticate to the repository,
+- ``repository_user``: Username used to authenticate to the
+  repository. If specified, password is required,
 
-- ``repository_password``: Password used to authenticate to the repository,
+- ``repository_password``: Password used to authenticate to the
+  repository. If specified, username is required,
 
 - ``folder_view``: Choice that let select how CMIS folders are
-  rendered in Plone. This let you select which Plone folder default
-  template to use.
+  rendered in Plone. This let you select which Plone folder template
+  to use.
 
 - ``proxy``: Proxy URL to use to connect to the CMIS repository.
 

@@ -123,25 +123,29 @@ class SOAPConnector(object):
         self._repository_info = None
         self._root_id = None
 
-    def _create_object(self, result):
+    def _create_object(self, result, is_root=False):
         return create_cmis_object(
-            properties_to_dict(result.properties), self)
+            properties_to_dict(result.properties),
+            self,
+            is_root=is_root)
 
     @soap_error
-    def get_object_by_path(self, path):
+    def get_object_by_path(self, path, is_root=False):
         return self._create_object(
             self._client.object.getObjectByPath(
                 repositoryId=self._repository_id,
                 path=path,
-                filter='*'))
+                filter='*'),
+            is_root=is_root)
 
     @soap_error
-    def get_object_by_cmis_id(self, cmis_id):
+    def get_object_by_cmis_id(self, cmis_id, is_root=False):
         return self._create_object(
-            self._client.object.getObjectByPath(
+            self._client.object.getObject(
                 repositoryId=self._repository_id,
                 objectId=cmis_id,
-                filter='*'))
+                filter='*'),
+            is_root=is_root)
 
     @soap_error
     def get_object_children(self, cmis_object):
@@ -187,10 +191,12 @@ class SOAPConnector(object):
         # Find root
         if self._settings.repository_path:
             self._root = self.get_object_by_path(
-                self._settings.repository_path)
+                self._settings.repository_path,
+                is_root=True)
         else:
-            self._root = self.get_object_by_id(
-                self.get_repository_info().rootFolderId)
+            self._root = self.get_object_by_cmis_id(
+                self.get_repository_info().rootFolderId,
+                is_root=True)
         return self._root
 
     @soap_error

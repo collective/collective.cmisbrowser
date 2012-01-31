@@ -13,6 +13,7 @@ from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 from Globals import InitializeClass
 
+from collective.cmisbrowser.interfaces import CMISConnectorError
 from collective.cmisbrowser.interfaces import ICMISStaleResult
 from collective.cmisbrowser.interfaces import ICMISContent, ICMISFileResult
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder
@@ -206,9 +207,6 @@ class CMISDocument(CMISContent):
     def Format(self):
         return self._properties.get('cmis:contentStreamFileName', 'text/html')
 
-    def CMISStreamId(self):
-        return self._properties['cmis:contentStreamId']
-
 
 InitializeClass(CMISDocument)
 
@@ -248,6 +246,15 @@ class CMISFolder(CMISContent):
 InitializeClass(CMISFolder)
 
 
+class CMISRootFolder(CMISFolder):
+
+    def getId(self):
+        # The root must have an id of None (as they are the root of the URL).
+        return None
+
+
+InitializeClass(CMISRootFolder)
+
 
 CMIS_FACTORIES = {
     'cmis:folder': CMISFolder,
@@ -255,11 +262,21 @@ CMIS_FACTORIES = {
     'default': CMISContent}
 
 
-def create_cmis_object(properties, connector):
-    object_type = properties.get('cmis:objectTypeId')
-    if object_type in CMIS_FACTORIES:
-        return CMIS_FACTORIES[object_type](properties, connector)
-    base_type = properties.get('cmis:baseTypeId')
-    if base_type in CMIS_FACTORIES:
-        return CMIS_FACTORIES[base_type](properties, connector)
-    return CMIS_FACTORIES['default'](properties, connector)
+def create_cmis_object(properties, connector, is_root=False):
+
+    def get_factory():
+        object_type = properties.get('cmis:objectTypeId')
+        if object_type in CMIS_FACTORIES:
+            return CMIS_FACTORIES[object_type]
+        base_type = properties.get('cmis:baseTypeId')
+        if base_type in CMIS_FACTORIES:
+            return CMIS_FACTORIES[base_type]
+        return CMIS_FACTORIES['default']
+
+    factory = get_factory()
+    if is_root:
+        if not ICMISFolder.implementedBy(factory):
+            raise CMISConnectorError('Connector root must be a folder.')
+        # Upgrade factory to root folder.
+        factory = CMISRootFolder
+    return factory(properties, connector)
