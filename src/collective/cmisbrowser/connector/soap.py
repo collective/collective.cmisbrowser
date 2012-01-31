@@ -97,6 +97,9 @@ class SOAPClient(object):
                     self.settings.repository_user,
                     self.settings.repository_password))
             client.set_options(wsse=auth)
+        if self.settings.proxy:
+            client.set_options(proxy={'http': self.settings.proxy,
+                                      'https': self.settings.proxy})
         return client.service
 
     @CachedProperty
