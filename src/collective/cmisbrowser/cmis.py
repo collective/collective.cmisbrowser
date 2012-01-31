@@ -8,6 +8,7 @@ from Acquisition import Implicit, aq_inner, aq_parent
 from DateTime import DateTime
 from Products.CMFDefault.permissions import View
 from Products.CMFPlone import Batch
+from Products.CMFCore.utils import getToolByName
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 from Globals import InitializeClass
@@ -17,6 +18,7 @@ from collective.cmisbrowser.interfaces import ICMISContent, ICMISFileResult
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder
 from zope.interface import implements
 from zope.datetime import time
+from zope.app.component.hooks import getSite
 
 
 def to_zope_datetime(datetime):
@@ -169,6 +171,15 @@ class CMISContent(Implicit):
     def Type(self):
         return self.portal_type
 
+    # Support for portal_type and portal_actions
+    getPortalTypeName = Type
+
+    def getTypeInfo(self):
+        tool = getToolByName(getSite(), 'portal_types', None)
+        if tool is not None:
+            return tool.getTypeInfo(self.portal_type)
+        return None
+
 
 InitializeClass(CMISContent)
 
@@ -219,6 +230,7 @@ class CMISFolder(CMISContent):
             return content.__of__(aq_inner(self))
         return super(CMISFolder, self).publishTraverse(request, name)
 
+    # This is used by Plone templates to list a folder content
     security.declareProtected(View, 'getFolderContents')
     def getFolderContents(self, *args, **kwargs):
         contents = map(
