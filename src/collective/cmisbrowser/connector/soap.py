@@ -78,6 +78,9 @@ def properties_to_dict(properties):
 class SOAPClient(object):
 
     def __init__(self, settings):
+        if not settings.repository_url:
+            # Settings are invalid. This happens during KSS validation, raise NotFound.
+            raise NotFound()
         self.settings = settings
 
     def _create_client(self, service):
@@ -174,7 +177,7 @@ class SOAPConnector(object):
     @soap_error
     def start(self, factory):
         if self._repository_id is not None:
-            return
+            return self._root
         # We can't get factory as a parameter in __init_,
         # because we are an adapter.
         self._factory = factory
