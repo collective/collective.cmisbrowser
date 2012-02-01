@@ -133,7 +133,7 @@ class CMISContent(Implicit):
 
     security.declareProtected(View, 'Creator')
     def Creator(self):
-        return self._properties.get('cmis:createdBy')
+        return self._properties.get('cmis:createdBy', '')
 
     security.declareProtected(View, 'CreationDate')
     def CreationDate(self, zone=None):
@@ -196,11 +196,16 @@ class CMISContent(Implicit):
 
     security.declareProtected(View, 'listCreators')
     def listCreators(self):
-        return (self.Creator(),)
+        creator = self.Creator()
+        if creator:
+            return (creator,)
+        return tuple()
 
-    # Support for portal_type and portal_actions
+    # Support for portal_type and portal_actions, see IDynamicType
+    security.declarePublic('getPortalTypeName')
     getPortalTypeName = Type
 
+    security.declarePublic('getTypeInfo')
     def getTypeInfo(self):
         tool = getToolByName(getSite(), 'portal_types', None)
         if tool is not None:
@@ -221,6 +226,7 @@ class CMISDocument(CMISContent):
     portal_icon = '++resource++collective.cmisbrowser.document.png'
 
     def refreshedBrowserDefault(self, request):
+        # Fetch document content and display it.
         return self._api.fetch(self), ('@@view',)
 
     def getId(self):
@@ -251,14 +257,15 @@ class CMISFolder(CMISContent):
         return self.getCMISBrowser()._getOb('syndication_information', None)
 
     def publishTraverse(self, request, name):
+        # Traverse to a sub CMIS content, or default.
         content = self._api.traverse(name, self)
         if content is not None:
             return content
         return super(CMISFolder, self).publishTraverse(request, name)
 
-    # This is used by Plone templates to list a folder content
     security.declareProtected(View, 'getFolderContents')
     def getFolderContents(self, *args, **kwargs):
+        # This is used by Plone templates to list a folder content, and RSS.
         contents = self._api.list(self)
         if 'batch' in kwargs:
             return Batch(
