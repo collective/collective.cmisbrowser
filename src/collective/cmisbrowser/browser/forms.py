@@ -13,14 +13,14 @@ from zope.interface import implements
 from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 
-from collective.cmisbrowser.interfaces import ICMISBrowser, IRSSSetting
+from collective.cmisbrowser.interfaces import ICMISSettings, IRSSSetting
 
 _ = MessageFactory('collective.cmisbrowser')
 
 
 class CMISBrowserAddForm(AddForm):
     label = _(u'Add a CMIS Browser')
-    form_fields = Fields(ICMISBrowser)
+    form_fields = Fields(INameFromTitle, ICMISSettings)
 
     def setUpWidgets(self, ignore_request=False):
         # We setup the add form like an edit form, in order to read
@@ -38,7 +38,7 @@ class CMISBrowserAddForm(AddForm):
 
 class CMISBrowserEditForm(EditForm):
     label = _(u'Edit CMIS Browser')
-    form_fields = Fields(ICMISBrowser, IRSSSetting)
+    form_fields = Fields(ICMISSettings, IRSSSetting)
 
 
 # The default title adapter is used by the add form
