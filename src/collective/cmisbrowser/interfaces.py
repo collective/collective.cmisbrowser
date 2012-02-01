@@ -4,6 +4,8 @@
 # $Id$
 
 from Products.CMFPlone.interfaces.constrains import IConstrainTypes
+from Products.CMFPlone.interfaces import INonStructuralFolder
+from Products.CMFCore.interfaces import IDublinCore
 
 from plone.app.content.interfaces import INameFromTitle
 from zope import schema
@@ -43,7 +45,8 @@ class CMISConnectorError(ValueError):
 
 
 class ICMISSettings(Interface):
-
+    """Generic CMIS Settings.
+    """
     repository_url = schema.URI(
         title=_(u'CMIS repository URI'))
     repository_name = schema.TextLine(
@@ -51,7 +54,8 @@ class ICMISSettings(Interface):
         required=False)
     repository_path = schema.TextLine(
         title=_(u'CMIS start folder path'),
-        description=_(u'Folder in the CMIS repository at which the browser should start.'),
+        description=_(u'Folder in the CMIS repository at which the browser should start, '
+                      u'will start at the root of the repository if this is empty.'),
         required=False)
     repository_user = schema.TextLine(
         title=_(u'User to access CMIS repository'),
@@ -77,12 +81,21 @@ class ICMISSettings(Interface):
             raise Invalid(_(u'Password specified, but username missing.'))
 
 
+class IRSSSetting(Interface):
+    """Enable RSS setting.
+    """
+    folder_rss = schema.Bool(
+        title=_(u'Enable RSS feed'),
+        description=_(u'If this is checked, an RSS feed will be available on every CMIS folder.'),
+        required=True)
+
+
 class ICMISConnector(Interface):
     """Connect to a CMIS repository.
     """
 
 
-class ICMISContent(IBrowserPublisher):
+class ICMISContent(IBrowserPublisher, IDublinCore):
     """A browsed document.
     """
     portal_type = Attribute(u"Portal content name to be displayed")
@@ -97,44 +110,8 @@ class ICMISContent(IBrowserPublisher):
         """Return content CMIS identifier.
         """
 
-    def Title():
-        """Return content title.
-        (Plone API).
-        """
-
-    def Description():
-        """Return content description.
-        (Plone API).
-        """
-
-    def CreationDate():
-        """Return creation date as an ISO string (or 'None').
-        (Plone API).
-        """
-
-    def ModificationDate():
-        """Return modification date as an ISO string (or 'None').
-        (Plone API).
-        """
-
-    def EffectiveDate():
-        """Return effective date as an ISO string (or 'None').
-        (Plone API).
-        """
-
-    def ExpirationDate():
-        """Return expiration date as an ISO string (or 'None').
-        (Plone API).
-        """
-
-    def Subject():
-        """Return subjects as a tuple of strings.
-        (Plone API).
-        """
-
-    def Type():
-        """Return content type.
-        (Plone API).
+    def getCMISBrowser():
+        """Return associated browser object.
         """
 
 
@@ -142,12 +119,8 @@ class ICMISDocument(ICMISContent):
     """A content.
     """
 
-    def CMISStreamId():
-        """Return content CMIS stream identifier.
-        """
 
-
-class ICMISFolder(ICMISContent):
+class ICMISFolder(ICMISContent, INonStructuralFolder):
     """A browsed folder.
     """
 
@@ -173,14 +146,6 @@ class ICMISFileResult(Interface):
     mimetype = Attribute('mimetype')
 
 
-class ICMISBrowser(IBrowserPublisher, INameFromTitle, IConstrainTypes, ICMISSettings):
+class ICMISBrowser(IBrowserPublisher, INonStructuralFolder, INameFromTitle, IConstrainTypes, ICMISSettings):
     """A Browser.
     """
-
-    def connect():
-        """Return a connector to the current CMIS repository.
-        """
-
-    def getCMISBrowser():
-        """Return self. (Use to get the browser by acquisition).
-        """

@@ -13,10 +13,9 @@ from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 from Globals import InitializeClass
 
-from collective.cmisbrowser.interfaces import CMISConnectorError
-from collective.cmisbrowser.interfaces import ICMISStaleResult
-from collective.cmisbrowser.interfaces import ICMISContent, ICMISFileResult
+from collective.cmisbrowser.interfaces import ICMISContent
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder
+from collective.cmisbrowser.cmis.result import CMISStaleResult
 from zope.interface import implements
 from zope.datetime import time
 from zope.app.component.hooks import getSite
@@ -25,34 +24,7 @@ from zope.app.component.hooks import getSite
 def to_zope_datetime(datetime):
     return DateTime(*datetime.timetuple()[:6])
 
-
-class CMISStaleResult(Implicit):
-    """An unchanged file result from CMIS.
-    """
-    implements(ICMISStaleResult)
-    security = ClassSecurityInfo()
-    security.declareObjectProtected(View)
-
-    def __init__(self):
-        pass
-
-InitializeClass(CMISStaleResult)
-
-
-class CMISFileResult(Implicit):
-    """File content as download from CMIS.
-    """
-    implements(ICMISFileResult)
-    security = ClassSecurityInfo()
-    security.declareObjectProtected(View)
-
-    def __init__(self, filename, length, stream, mimetype):
-        self.filename = filename
-        self.length = length
-        self.stream = stream
-        self.mimetype = mimetype
-
-InitializeClass(CMISFileResult)
+default_zone = DateTime().timezone()
 
 
 class CMISContent(Implicit):
@@ -68,14 +40,20 @@ class CMISContent(Implicit):
     portal_type = 'CMIS Document'
     portal_icon = '++resource++collective.cmisbrowser.document.png'
 
-    def __init__(self, properties, connector):
+    # We could get the browser using Acquiition, but that doesn't work
+    # in properties.
+    def __init__(self, properties, api):
         self._properties = properties
-        self._connector = connector
+        self._api = api
 
     def refreshedBrowserDefault(self, request):
         return aq_inner(self), ('@@view',)
 
-    def browserDefault(self, request):
+    def browserDefault(self, request=None):
+        # Plone calls browserDefault without the correct information.
+        if request is None:
+            request = self.REQUEST
+
         # Support for IF-MODIFIED-SINCE
         header = request.environ.get('HTTP_IF_MODIFIED_SINCE', None)
         if header is not None:
@@ -97,6 +75,14 @@ class CMISContent(Implicit):
         default = DefaultPublishTraverse(self, request)
         return default.publishTraverse(request, name)
 
+    security.declareProtected(View, 'absolute_url')
+    def absolute_url(self):
+        url = aq_parent(aq_inner(self)).absolute_url()
+        identifier = self.getId()
+        if identifier is not None:
+            url += '/' + identifier
+        return url
+
     security.declareProtected(View, 'getId')
     def getId(self):
         path = self._properties.get('cmis:path')
@@ -112,16 +98,30 @@ class CMISContent(Implicit):
         # Some view expect to have catalog brains
         return aq_inner(self)
 
+    security.declareProtected(View, 'CMISId')
     def CMISId(self):
         return self._properties['cmis:objectId']
 
-    security.declareProtected(View, 'absolute_url')
-    def absolute_url(self):
-        url = aq_parent(aq_inner(self)).absolute_url()
-        identifier = self.getId()
-        if identifier is not None:
-            url += '/' + identifier
-        return url
+    security.declareProtected(View, 'getCMISBrowser')
+    def getCMISBrowser(self):
+        # We use this to defeat Acquisition that doesn't work in a python property
+        return self._api.context
+
+    security.declareProtected(View, 'created')
+    def created(self):
+        return to_zope_datetime(self._properties.get('cmis:creationDate'))
+
+    security.declareProtected(View, 'modified')
+    def modified(self):
+        return to_zope_datetime(self._properties.get('cmis:lastModificationDate'))
+
+    security.declareProtected(View, 'expires')
+    def expires(self):
+        return DateTime('2499/12/31')
+
+    # IDublinCore implementation
+    security.declareProtected(View, 'Identifier')
+    Identifier = absolute_url
 
     security.declareProtected(View, 'Title')
     def Title(self):
@@ -135,34 +135,49 @@ class CMISContent(Implicit):
     def Creator(self):
         return self._properties.get('cmis:createdBy')
 
-    def created(self):
-        return to_zope_datetime(self._properties.get('cmis:creationDate'))
-
     security.declareProtected(View, 'CreationDate')
-    def CreationDate(self):
-        return self.created().ISO()
+    def CreationDate(self, zone=None):
+        if zone is None:
+            zone = default_zone
+        return self.created().toZone(zone).ISO()
 
-    def modified(self):
-        return to_zope_datetime(self._properties.get('cmis:lastModificationDate'))
+    security.declareProtected(View, 'Date')
+    Date = CreationDate
 
     security.declareProtected(View, 'ModificationDate')
-    def ModificationDate(self):
-        return self.modified().ISO()
-
-    def expires(self):
-        return DateTime('2499/12/31')
+    def ModificationDate(self, zone=None):
+        if zone is None:
+            zone = default_zone
+        return self.modified().toZone(zone).ISO()
 
     security.declareProtected(View, 'EffectiveDate')
-    def EffectiveDate(self):
+    def EffectiveDate(self, zone=None):
         return 'None'
 
     security.declareProtected(View, 'ExpirationDate')
-    def ExpirationDate(self):
+    def ExpirationDate(self, zone=None):
         return 'None'
 
     security.declareProtected(View, 'Format')
     def Format(self):
         return 'text/html'
+
+    security.declareProtected(View, 'Language')
+    def Language(self):
+        return ''
+
+    security.declareProtected(View, 'Publisher')
+    def Publisher(self):
+        tool = getToolByName(self, 'portal_metadata', None)
+
+        if tool is not None:
+            return tool.getPublisher()
+
+        return 'No publisher'
+
+    security.declareProtected(View, 'Rights')
+    def Rights(self):
+        return ''
 
     security.declareProtected(View, 'Subject')
     def Subject(self):
@@ -171,6 +186,17 @@ class CMISContent(Implicit):
     security.declareProtected(View, 'Type')
     def Type(self):
         return self.portal_type
+
+    security.declareProtected(View, 'listContributors')
+    def listContributors(self):
+        return tuple()
+
+    security.declareProtected(View, 'Contributors')
+    Contributors = listContributors
+
+    security.declareProtected(View, 'listCreators')
+    def listCreators(self):
+        return (self.Creator(),)
 
     # Support for portal_type and portal_actions
     getPortalTypeName = Type
@@ -195,8 +221,7 @@ class CMISDocument(CMISContent):
     portal_icon = '++resource++collective.cmisbrowser.document.png'
 
     def refreshedBrowserDefault(self, request):
-        result = self._connector.get_object_content(aq_inner(self))
-        return result.__of__(self), ('@@view',)
+        return self._api.fetch(self), ('@@view',)
 
     def getId(self):
         identifier = self._properties.get('cmis:contentStreamFileName')
@@ -220,20 +245,21 @@ class CMISFolder(CMISContent):
     portal_type = 'CMIS Folder'
     portal_icon = '++resource++collective.cmisbrowser.folder.png'
 
+    @property
+    def syndication_information(self):
+        # Proxy syndication_information setting from the browser
+        return self.getCMISBrowser()._getOb('syndication_information', None)
+
     def publishTraverse(self, request, name):
-        path = self._properties.get('cmis:path')
-        if path:
-            path = path.rstrip('/') + '/' + name
-            content = self._connector.get_object_by_path(path)
-            return content.__of__(aq_inner(self))
+        content = self._api.traverse(name, self)
+        if content is not None:
+            return content
         return super(CMISFolder, self).publishTraverse(request, name)
 
     # This is used by Plone templates to list a folder content
     security.declareProtected(View, 'getFolderContents')
     def getFolderContents(self, *args, **kwargs):
-        contents = map(
-            lambda c: c.__of__(self),
-            self._connector.get_object_children(self))
+        contents = self._api.list(self)
         if 'batch' in kwargs:
             return Batch(
                 contents,
@@ -256,27 +282,4 @@ class CMISRootFolder(CMISFolder):
 InitializeClass(CMISRootFolder)
 
 
-CMIS_FACTORIES = {
-    'cmis:folder': CMISFolder,
-    'cmis:document': CMISDocument,
-    'default': CMISContent}
 
-
-def create_cmis_object(properties, connector, is_root=False):
-
-    def get_factory():
-        object_type = properties.get('cmis:objectTypeId')
-        if object_type in CMIS_FACTORIES:
-            return CMIS_FACTORIES[object_type]
-        base_type = properties.get('cmis:baseTypeId')
-        if base_type in CMIS_FACTORIES:
-            return CMIS_FACTORIES[base_type]
-        return CMIS_FACTORIES['default']
-
-    factory = get_factory()
-    if is_root:
-        if not ICMISFolder.implementedBy(factory):
-            raise CMISConnectorError('Connector root must be a folder.')
-        # Upgrade factory to root folder.
-        factory = CMISRootFolder
-    return factory(properties, connector)

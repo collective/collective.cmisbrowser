@@ -5,16 +5,16 @@
 
 import logging
 
-from collective.cmisbrowser.interfaces import ICMISBrowser, ICMISConnector
+from collective.cmisbrowser.interfaces import ICMISBrowser
 from collective.cmisbrowser.interfaces import CMISConnectorError
-from plone.app.content.item import Item
+from collective.cmisbrowser.cmis.api import CMISObjectAPI
+from plone.app.content.container import Container
 from zope.component.factory import Factory
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 
-from Acquisition import aq_inner
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 _ = MessageFactory('collective.cmisbrowser')
@@ -42,32 +42,20 @@ class CMISTraverser(object):
 
     def __init__(self, browser):
         self.browser = browser
-        self.connector = browser.connect()
+        self.api = CMISObjectAPI(browser)
 
     def browserDefault(self, request):
-        try:
-            root = self.connector.start().__of__(self.browser)
-            return root, ('@@view',)
-        except CMISConnectorError:
-            logger.exception('Error while accessing CMIS repository')
-            return self.browser, ('@@view',)
+        return self.api.root, ('@@view',)
 
     def publishTraverse(self, request, name):
-        try:
-            root = self.connector.start().__of__(self.browser)
-            path = root._properties.get('cmis:path')
-            if path:
-                path = path.rstrip('/') + '/' + name
-                content = self.connector.get_object_by_path(path)
-                return content.__of__(root)
-        except CMISConnectorError:
-            logger.exception('Error while accessing CMIS repository')
-            return CMISErrorTraverser(self.browser)
+        content = self.api.traverse(name)
+        if content is not None:
+            return content
         default = DefaultPublishTraverse(self.browser, request)
         return default.publishTraverse(request, name)
 
 
-class CMISBrowser(Item):
+class CMISBrowser(Container):
     implements(ICMISBrowser)
     portal_type = "CMIS Browser"
 
@@ -79,20 +67,35 @@ class CMISBrowser(Item):
     folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
 
-    def connect(self):
-        return ICMISConnector(self)
-
-    def getCMISBrowser(self):
-        return aq_inner(self)
-
     def browserDefault(self, request):
-        return CMISTraverser(self).browserDefault(request)
+        try:
+            return CMISTraverser(self).browserDefault(request)
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return self.browser, ('@@view',)
 
     def publishTraverse(self, request, name):
-        return CMISTraverser(self).publishTraverse(request, name)
+        try:
+            return CMISTraverser(self).publishTraverse(request, name)
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return CMISErrorTraverser(self.browser)
+
+    # Implement IContrainTypes, you cannot add anything here.
+
+    def getConstrainTypesMode(self):
+        return 1
 
     def getLocallyAllowedTypes(self):
-        # You don't have the right to add anything here.
+        return []
+
+    def getImmediatelyAddableTypes(self):
+        return []
+
+    def getDefaultAddableTypes(self):
+        return []
+
+    def allowedContentTypes(self):
         return []
 
 

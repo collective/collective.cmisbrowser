@@ -36,6 +36,12 @@
      permission="zope2.View"
      />
 
+  <adapter
+     for="..interfaces.ICMISBrowser"
+     factory=".forms.RSSSettingAdapter"
+     provides="..interfaces.IRSSSetting"
+     />
+
   <!-- CMIS content view -->
   <browser:page
      for="..interfaces.ICMISFolder"

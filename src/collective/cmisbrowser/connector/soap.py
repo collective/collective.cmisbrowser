@@ -8,7 +8,7 @@ import subprocess
 import urllib2
 
 from collective.cmisbrowser.interfaces import ICMISConnector, CMISConnectorError
-from collective.cmisbrowser.cmis import create_cmis_object, CMISFileResult
+from collective.cmisbrowser.cmis.result import CMISFileResult
 from zope.interface import implements
 from zope.cachedescriptors.property import CachedProperty
 
@@ -125,16 +125,17 @@ class SOAPConnector(object):
         self._repository_id = None
         self._repository_info = None
         self._root_id = None
+        self._factory = None
 
-    def _create_object(self, result, is_root=False):
-        return create_cmis_object(
+    def _create(self, result, is_root=False):
+        assert self._factory is not None
+        return self._factory(
             properties_to_dict(result.properties),
-            self,
             is_root=is_root)
 
     @soap_error
     def get_object_by_path(self, path, is_root=False):
-        return self._create_object(
+        return self._create(
             self._client.object.getObjectByPath(
                 repositoryId=self._repository_id,
                 path=path,
@@ -143,7 +144,7 @@ class SOAPConnector(object):
 
     @soap_error
     def get_object_by_cmis_id(self, cmis_id, is_root=False):
-        return self._create_object(
+        return self._create(
             self._client.object.getObject(
                 repositoryId=self._repository_id,
                 objectId=cmis_id,
@@ -152,7 +153,7 @@ class SOAPConnector(object):
 
     @soap_error
     def get_object_children(self, cmis_object):
-        create = lambda c: self._create_object(c.objectInFolder.object)
+        create = lambda c: self._create(c.objectInFolder.object)
         return map(create, self._client.navigation.getDescendants(
                 repositoryId=self._repository_id,
                 folderId=cmis_object.CMISId(),
@@ -171,9 +172,13 @@ class SOAPConnector(object):
             mimetype=content.mimeType)
 
     @soap_error
-    def start(self):
+    def start(self, factory):
         if self._repository_id is not None:
             return
+        # We can't get factory as a parameter in __init_,
+        # because we are an adapter.
+        self._factory = factory
+
         # Find repository id
         repositories = self._client.repository.getRepositories()
         if self._settings.repository_name:
