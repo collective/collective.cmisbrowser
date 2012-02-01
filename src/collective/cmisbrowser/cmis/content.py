@@ -11,7 +11,11 @@ from Products.CMFPlone import Batch
 from Products.CMFCore.utils import getToolByName
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 
-from Globals import InitializeClass
+try:
+    # Support Zope 2.12+
+    from App.class_init import InitializeClass
+except ImportError:
+    from Globals import InitializeClass
 
 from collective.cmisbrowser.interfaces import ICMISContent
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder

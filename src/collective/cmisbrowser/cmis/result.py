@@ -4,9 +4,14 @@
 # $Id$
 
 from Acquisition import Implicit
-from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from Products.CMFDefault.permissions import View
+
+try:
+    # Support Zope 2.12+
+    from App.class_init import InitializeClass
+except ImportError:
+    from Globals import InitializeClass
 
 from zope.interface import implements
 
