@@ -42,6 +42,31 @@
      provides="..interfaces.IRSSSetting"
      />
 
+  <!-- CMIS content url management (for Plone 4+) -->
+  <browser:page
+     for="..interfaces.ICMISContent"
+     name="breadcrumbs_view"
+     class=".urls.NavigationBreadcrumbs"
+     permission="zope.Public"
+     allowed_attributes="breadcrumbs"
+     />
+
+  <browser:page
+     for="..interfaces.ICMISContent"
+     name="absolute_url"
+     class=".urls.AbsoluteURL"
+     permission="zope.Public"
+     allowed_interface="zope.traversing.browser.interfaces.IAbsoluteURL"
+     />
+
+  <view
+     for="..interfaces.ICMISContent"
+     factory=".urls.AbsoluteURL"
+     type="zope.publisher.interfaces.http.IHTTPRequest"
+     permission="zope.Public"
+     provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+     />
+
   <!-- CMIS content view -->
   <browser:page
      for="..interfaces.ICMISFolder"

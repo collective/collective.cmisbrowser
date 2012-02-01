@@ -6,9 +6,9 @@
 from AccessControl import ClassSecurityInfo
 from Acquisition import Implicit, aq_inner, aq_parent
 from DateTime import DateTime
-from Products.CMFDefault.permissions import View
-from Products.CMFPlone import Batch
 from Products.CMFCore.utils import getToolByName
+from Products.CMFDefault.permissions import View
+from Products.CMFPlone.PloneBatch import Batch
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 
 try:
