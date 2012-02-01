@@ -55,16 +55,6 @@ class CMISFolderView(BrowserView):
         return view()
 
 
-class CMISFolderContents(BrowserView):
-    """Folder listing page.
-    """
-
-    def __call__(self):
-        view = getattr(aq_inner(self.context), 'folder_listing')
-        return view()
-
-
-
 class CMISBrowserView(BrowserView):
 
     def __call__(self):
