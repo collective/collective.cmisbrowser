@@ -5,36 +5,24 @@
 
 import logging
 
-from collective.cmisbrowser.interfaces import ICMISBrowser
-from collective.cmisbrowser.interfaces import CMISConnectorError
-from collective.cmisbrowser.cmis.api import CMISObjectAPI
+from ZPublisher.BaseRequest import DefaultPublishTraverse
+
 from plone.app.content.container import Container
 from zope.component.factory import Factory
-from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
+from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.schema.fieldproperty import FieldProperty
 
-from ZPublisher.BaseRequest import DefaultPublishTraverse
+from collective.cmisbrowser.cmis.api import CMISObjectAPI
+from collective.cmisbrowser.errors import CMISConnectorError
+from collective.cmisbrowser.errors import CMISErrorTraverser
+from collective.cmisbrowser.interfaces import ICMISBrowser
 
 _ = MessageFactory('collective.cmisbrowser')
 
 
 logger = logging.getLogger('collective.cmisbrowser')
-
-
-class CMISErrorTraverser(object):
-    # Alternate traverser in case of error. Display an error page.
-    implements(IBrowserPublisher)
-
-    def __init__(self, browser):
-        self.browser = browser
-
-    def browserDefault(self, request):
-        return self.browser, ('@@view',)
-
-    def publishTraverse(self, request, name):
-        return self
 
 
 class CMISTraverser(object):
@@ -50,16 +38,18 @@ class CMISTraverser(object):
     def browserDefault(self, request):
         try:
             return self.get_api().root, ('@@view',)
-        except CMISConnectorError:
+        except CMISConnectorError, error:
+            error.send(request)
             logger.exception('Error while accessing CMIS repository')
-            return self.browser, ('@@view',)
+            return self.browser, ('@@cmis_error',)
 
     def publishTraverse(self, request, name):
         try:
             content = self.get_api().traverse(name)
             if content is not None:
                 return content
-        except CMISConnectorError:
+        except CMISConnectorError, error:
+            error.send(request)
             logger.exception('Error while accessing CMIS repository')
             return CMISErrorTraverser(self.browser)
         default = DefaultPublishTraverse(self.browser, request)

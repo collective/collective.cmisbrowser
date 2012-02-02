@@ -3,6 +3,8 @@
 # See also LICENSE.txt
 # $Id$
 
+import logging
+
 from AccessControl import ClassSecurityInfo
 from Acquisition import Implicit, aq_inner, aq_parent
 from DateTime import DateTime
@@ -19,6 +21,8 @@ except ImportError:
 
 from collective.cmisbrowser.interfaces import ICMISContent
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder
+from collective.cmisbrowser.errors import CMISConnectorError
+from collective.cmisbrowser.errors import CMISErrorTraverser
 from collective.cmisbrowser.cmis.result import CMISStaleResult
 from zope.interface import implements
 from zope.datetime import time
@@ -29,6 +33,7 @@ def to_zope_datetime(datetime):
     return DateTime(*datetime.timetuple()[:6])
 
 default_zone = DateTime().timezone()
+logger = logging.getLogger('collective.cmisbrowser')
 
 
 class CMISContent(Implicit):
@@ -232,8 +237,13 @@ class CMISDocument(CMISContent):
     portal_icon = '++resource++collective.cmisbrowser.document.png'
 
     def refreshedBrowserDefault(self, request):
-        # Fetch document content and display it.
-        return self._api.fetch(self), ('@@view',)
+        try:
+            # Fetch document content and display it.
+            return self._api.fetch(self), ('@@view',)
+        except CMISConnectorError, error:
+            error.send(request)
+            logger.exception('Error while fetching content from CMIS')
+            return CMISErrorTraverser(self.getCMISBrowser())
 
     def getId(self):
         identifier = self._properties.get('cmis:contentStreamFileName')
@@ -264,9 +274,14 @@ class CMISFolder(CMISContent):
 
     def publishTraverse(self, request, name):
         # Traverse to a sub CMIS content, or default.
-        content = self._api.traverse(name, self)
-        if content is not None:
-            return content
+        try:
+            content = self._api.traverse(name, self)
+            if content is not None:
+                return content
+        except CMISConnectorError, error:
+            error.send(request)
+            logger.exception('Error while traversing CMIS repository')
+            return CMISErrorTraverser(self.getCMISBrowser())
         return super(CMISFolder, self).publishTraverse(request, name)
 
     security.declareProtected(View, 'getFolderContents')

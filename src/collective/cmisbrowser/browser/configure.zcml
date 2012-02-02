@@ -30,9 +30,16 @@
 
   <browser:page
      for="..interfaces.ICMISBrowser"
+     name="cmis_error"
+     class=".views.CMISBrowserErrorView"
+     template="templates/cmisbrowsererrorview.pt"
+     permission="zope2.View"
+     />
+
+  <browser:page
+     for="..interfaces.ICMISBrowser"
      name="view"
      class=".views.CMISBrowserView"
-     template="templates/cmisbrowserview.pt"
      permission="zope2.View"
      />
 

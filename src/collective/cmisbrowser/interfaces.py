@@ -31,19 +31,6 @@ folder_view_source = SimpleVocabulary([
             title=_plone('Tabular view'))])
 
 
-class CMISConnectorError(ValueError):
-
-    def __init__(self, message, detail=None):
-        ValueError.__init__(self, message, detail)
-        self.message = message
-        self.detail = detail
-
-    def __str__(self):
-        message = ': '.join((self.__class__.__name__, self.message))
-        if self.detail:
-            message = '\n'.join((message, self.detail))
-        return message
-
 
 class ICMISSettings(Interface):
     """Generic CMIS Settings.

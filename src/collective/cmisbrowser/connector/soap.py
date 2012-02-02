@@ -7,12 +7,14 @@ import suds
 import subprocess
 import urllib2
 
-from collective.cmisbrowser.interfaces import ICMISConnector, CMISConnectorError
-from collective.cmisbrowser.cmis.result import CMISFileResult
+from zExceptions import NotFound
+
 from zope.interface import implements
 from zope.cachedescriptors.property import CachedProperty
 
-from zExceptions import NotFound
+from collective.cmisbrowser.cmis.result import CMISFileResult
+from collective.cmisbrowser.errors import CMISConnectorError
+from collective.cmisbrowser.interfaces import ICMISConnector
 
 
 def indent_xml(xml):

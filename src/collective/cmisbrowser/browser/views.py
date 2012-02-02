@@ -59,6 +59,16 @@ class CMISFolderView(BrowserView):
 class CMISBrowserView(BrowserView):
 
     def __call__(self):
+        # In case the user or Plone try a /view action, redirect to the object URL.
+        response = self.request.response
+        response.setStatus(301)
+        response.setHeader('Location', aq_inner(self.context).absolute_url())
+        return ''
+
+
+class CMISBrowserErrorView(BrowserView):
+
+    def __call__(self):
         # This is an error page, we don't want to cache it
         response = self.request.response
         response.setStatus(502)

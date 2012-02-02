@@ -3,14 +3,18 @@
 # See also LICENSE.txt
 # $Id$
 
-from collective.cmisbrowser.interfaces import CMISConnectorError
-from collective.cmisbrowser.interfaces import ICMISFolder, ICMISConnector
-
-from collective.cmisbrowser.cmis.content import CMISContent, CMISDocument
-from collective.cmisbrowser.cmis.content import CMISFolder, CMISRootFolder
+import logging
 
 from Acquisition import aq_inner
 from zExceptions import NotFound
+
+from collective.cmisbrowser.cmis.content import CMISContent, CMISDocument
+from collective.cmisbrowser.cmis.content import CMISFolder, CMISRootFolder
+from collective.cmisbrowser.errors import CMISConnectorError
+from collective.cmisbrowser.interfaces import ICMISFolder, ICMISConnector
+
+logger = logging.getLogger('collective.cmisbrowser')
+
 
 # This can be changed to a ZCML based registry for extensibility.
 CMIS_FACTORIES = {
@@ -40,7 +44,7 @@ class CMISObjectAPI(object):
             if is_root:
                 if not ICMISFolder.implementedBy(factory):
                     raise CMISConnectorError(
-                        u'Connector root must be a folder.')
+                        u'Connector root must be a folder in CMIS.')
                 # Upgrade factory to root folder.
                 factory = CMISRootFolder
             return factory(properties, self)
