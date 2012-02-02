@@ -20,10 +20,10 @@ class CMISConnectorError(ValueError):
         message = ': '.join((self.__class__.__name__, self.message))
         if self.detail:
             message = '\n'.join((message, self.detail))
-        return message
+        return
 
     def send(self, request):
-        IStatusMessage(request).add(self.message, type=u'error')
+        IStatusMessage(request).addStatusMessage(self.message, type=u'error')
 
 
 class CMISErrorTraverser(object):
