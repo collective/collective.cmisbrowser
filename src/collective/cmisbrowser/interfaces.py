@@ -9,6 +9,7 @@ from Products.CMFCore.interfaces import IDublinCore
 
 from plone.app.content.interfaces import INameFromTitle
 from zope import schema
+from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface, Attribute, invariant, Invalid
 from zope.publisher.interfaces.browser import IBrowserPublisher
@@ -146,6 +147,8 @@ class ICMISFileResult(Interface):
     mimetype = Attribute('mimetype')
 
 
-class ICMISBrowser(IBrowserPublisher, INonStructuralFolder, INameFromTitle, IConstrainTypes, ICMISSettings):
+class ICMISBrowser(IBrowserPublisher, INonStructuralFolder,
+                   INameFromTitle, IConstrainTypes,
+                   IAttributeAnnotatable, ICMISSettings):
     """A Browser.
     """

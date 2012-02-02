@@ -42,15 +42,26 @@ class CMISTraverser(object):
 
     def __init__(self, browser):
         self.browser = browser
-        self.api = CMISObjectAPI(browser)
+
+    def get_api(self):
+        # This will always be called only one time.
+        return CMISObjectAPI(self.browser)
 
     def browserDefault(self, request):
-        return self.api.root, ('@@view',)
+        try:
+            return self.get_api().root, ('@@view',)
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return self.browser, ('@@view',)
 
     def publishTraverse(self, request, name):
-        content = self.api.traverse(name)
-        if content is not None:
-            return content
+        try:
+            content = self.get_api().traverse(name)
+            if content is not None:
+                return content
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return CMISErrorTraverser(self.browser)
         default = DefaultPublishTraverse(self.browser, request)
         return default.publishTraverse(request, name)
 
@@ -58,6 +69,8 @@ class CMISTraverser(object):
 class CMISBrowser(Container):
     implements(ICMISBrowser)
     portal_type = "CMIS Browser"
+    # Make sure to disable comments
+    allow_discussion = False
 
     repository_url = FieldProperty(ICMISBrowser['repository_url'])
     repository_name = FieldProperty(ICMISBrowser['repository_name'])
@@ -68,18 +81,10 @@ class CMISBrowser(Container):
     proxy = FieldProperty(ICMISBrowser['proxy'])
 
     def browserDefault(self, request):
-        try:
-            return CMISTraverser(self).browserDefault(request)
-        except CMISConnectorError:
-            logger.exception('Error while accessing CMIS repository')
-            return self.browser, ('@@view',)
+        return CMISTraverser(self).browserDefault(request)
 
     def publishTraverse(self, request, name):
-        try:
-            return CMISTraverser(self).publishTraverse(request, name)
-        except CMISConnectorError:
-            logger.exception('Error while accessing CMIS repository')
-            return CMISErrorTraverser(self.browser)
+        return CMISTraverser(self).publishTraverse(request, name)
 
     # Implement IContrainTypes, you cannot add anything here.
 

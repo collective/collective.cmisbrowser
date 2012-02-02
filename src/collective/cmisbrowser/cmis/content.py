@@ -39,6 +39,8 @@ class CMISContent(Implicit):
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
     isPrincipiaFolderish = 0
+    # Make sure to disable comments
+    allow_discussion = False
 
     security.declarePublic('portal_type')
     portal_type = 'CMIS Document'
