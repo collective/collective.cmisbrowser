@@ -9,6 +9,7 @@
  <property name="content_meta_type">CMIS Browser</property>
  <property name="product"></property>
  <property name="factory">collective.cmisbrowser.CMISBrowser</property>
+ <property name="add_view_expr">string:${portal_url}/+/collective.cmisbrowser.CMISBrowser</property>
  <property name="immediate_view">@@edit</property>
  <property name="global_allow">True</property>
  <property name="filter_content_types">True</property>
