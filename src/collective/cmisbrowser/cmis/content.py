@@ -4,6 +4,7 @@
 # $Id$
 
 import logging
+import urllib
 
 from AccessControl import ClassSecurityInfo
 from Acquisition import Implicit, aq_inner, aq_parent
@@ -29,8 +30,15 @@ from zope.datetime import time
 from zope.app.component.hooks import getSite
 
 
+def encode_identifier(identifier):
+    if identifier is not None:
+        return urllib.quote(identifier.encode('utf-8'))
+    return identifier
+
 def to_zope_datetime(datetime):
-    return DateTime(*datetime.timetuple()[:6])
+    if datetime is not None:
+        return DateTime(*datetime.timetuple()[:6])
+    return DateTime()
 
 default_zone = DateTime().timezone()
 logger = logging.getLogger('collective.cmisbrowser')
@@ -98,10 +106,9 @@ class CMISContent(Implicit):
     def getId(self):
         path = self._properties.get('cmis:path')
         if path is not None:
-            identifier = path.rsplit('/', -1)[-1].encode('utf-8')
+            identifier = encode_identifier(path.rsplit('/', -1)[-1])
             if identifier:
                 return identifier
-            # The root object must have an ID of None.
         return None
 
     security.declareProtected(View, 'getObject')
@@ -246,7 +253,8 @@ class CMISDocument(CMISContent):
             return CMISErrorTraverser(self.getCMISBrowser())
 
     def getId(self):
-        identifier = self._properties.get('cmis:contentStreamFileName')
+        # We have to use the name here, there are no paths
+        identifier = encode_identifier(self._properties.get('cmis:name'))
         if identifier is None:
             identifier = super(CMISDocument, self).getId()
         return identifier

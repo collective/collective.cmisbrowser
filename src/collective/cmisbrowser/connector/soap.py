@@ -60,11 +60,12 @@ def properties_to_dict(properties):
     entry = properties.__dict__
 
     def serialize(value):
-        if len(value.value):
-            assert len(value.value) == 1, 'not supported'
+        data = getattr(value, 'value', [])
+        if len(data):
+            # XXX We need to do something to support multi-values here
             values.append(
                 (value._propertyDefinitionId,
-                 value.value[0]))
+                 data[0]))
 
     for key in entry.keys():
         if not key.startswith('property'):
@@ -91,6 +92,7 @@ class SOAPClient(object):
         """
         client = suds.client.Client(
             '/'.join((self.settings.repository_url, service)) + '?wsdl')
+        client.set_options(service=service, port=service + 'Port')
         if self.settings.repository_user:
             if self.settings.repository_password is None:
                 raise SOAPConnectorError(
@@ -167,13 +169,20 @@ class SOAPConnector(object):
 
     @soap_error
     def get_object_content(self, cmis_object):
+
+        def read_stream(stream):
+            if isinstance(stream, suds.sax.text.Text):
+                # If we have raw text, it is propably base64.
+                return stream.decode('base64')
+            return stream
+
         content = self._client.object.getContentStream(
             repositoryId=self._repository_id,
             objectId=cmis_object.CMISId())
         return CMISFileResult(
             filename=content.filename,
             length=content.length,
-            stream=content.stream,
+            stream=read_stream(content.stream),
             mimetype=content.mimeType)
 
     @soap_error

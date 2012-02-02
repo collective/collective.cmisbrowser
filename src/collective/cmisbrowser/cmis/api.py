@@ -4,6 +4,7 @@
 # $Id$
 
 import logging
+import urllib
 
 from Acquisition import aq_inner
 from zExceptions import NotFound
@@ -56,7 +57,9 @@ class CMISObjectAPI(object):
             content = self.root
         path = content._properties.get('cmis:path')
         if path:
-            path = path.rstrip('/') + '/' + name
+            path = '/'.join(
+                (path.rstrip('/'),
+                 urllib.unquote(name).decode('utf-8')))
             try:
                 child = self.connector.get_object_by_path(path)
             except NotFound:
