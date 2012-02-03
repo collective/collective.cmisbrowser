@@ -68,6 +68,10 @@ class ICMISSettings(Interface):
         if data.repository_password and not data.repository_user:
             raise Invalid(_(u'Password specified, but username missing.'))
 
+    def UID():
+        """return an unique identifier for those settings.
+        """
+
 
 class IRSSSetting(Interface):
     """Enable RSS setting.
@@ -81,6 +85,33 @@ class IRSSSetting(Interface):
 class ICMISConnector(Interface):
     """Connect to a CMIS repository.
     """
+
+
+class ICMISZopeAPI(Interface):
+    """High level API to talk to CMIS that returns Zope aware objects.
+    """
+    context = Attribute(u"Context at which the CMIS connection starts")
+    connector = Attribute(u"Low level API")
+    root = Attribute(u"CMIS object considered as root by this API")
+
+    def traverse(name, context=None):
+        """Traverse to a sub object called name, starting from root,
+        or from content is specified.
+        """
+
+    def fetch(content):
+        """Fetch the data stream associated with the content. This
+        return a ICMISFileResult.
+        """
+
+    def list(container):
+        """Return as a list all the CMIS content contained in the
+        given container one.
+        """
+
+    def search(text):
+        """Search all CMIS content that contains the given text.
+        """
 
 
 class ICMISContent(IBrowserPublisher, IDublinCore):

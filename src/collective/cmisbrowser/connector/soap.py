@@ -6,9 +6,11 @@
 import suds
 import subprocess
 import urllib2
+import time
 
 from zExceptions import NotFound
 
+from plone.memoize import ram
 from zope.interface import implements
 from zope.cachedescriptors.property import CachedProperty
 
@@ -29,6 +31,7 @@ class SOAPConnectorError(CMISConnectorError):
     pass
 
 
+# Usefull decorators
 
 def soap_error(wrapped):
 
@@ -43,7 +46,7 @@ def soap_error(wrapped):
                 u'HTTP transport error, code %d' % error.httpcode,
                 indent_xml(error.fp.read()))
         except suds.WebFault, error:
-            cmis_error = getattr(error.fault.detail, 'cmisFault', None)
+            cmis_error = getattr(getattr(error.fault, 'detail', None), 'cmisFault', None)
             if cmis_error is not None:
                 # In case of object not found, we convert to a Zope error
                 if cmis_error.type == 'objectNotFound':
@@ -55,17 +58,33 @@ def soap_error(wrapped):
     return wrapper
 
 
-def properties_to_dict(properties):
+def soap_cache(wrapped):
+    # Default cache time is one minute
+
+    def get_cache_key(method, self, id_or_path, *args, **kwargs):
+        return '#'.join((
+                self._settings.UID(),
+                self._repository_id,
+                id_or_path.encode('ascii', 'xmlcharrefreplace'),
+                str(time.time() // (2 *60))))
+
+    return ram.cache(get_cache_key)(wrapped)
+
+
+# Utility to convert SOAP-structure to simple dict.
+
+def properties_to_dict(properties, prefix=None, root=False):
     values = []
-    entry = properties.__dict__
+    entry = properties.properties.__dict__
 
     def serialize(value):
+        definition_id = value._propertyDefinitionId
+        if prefix is not None and definition_id.startswith(prefix):
+            definition_id = definition_id[len(prefix):]
         data = getattr(value, 'value', [])
         if len(data):
             # XXX We need to do something to support multi-values here
-            values.append(
-                (value._propertyDefinitionId,
-                 data[0]))
+            values.append((definition_id, data[0]))
 
     for key in entry.keys():
         if not key.startswith('property'):
@@ -75,14 +94,20 @@ def properties_to_dict(properties):
             map(serialize, value)
         else:
             serialize(value)
-    return dict(values)
+    result = dict(values)
+    if root:
+        if isinstance(root, bool) or root == result['cmis:objectId']:
+            result['cmis:objectTypeId'] = 'cmisbrowser:root'
+    return result
 
 
 class SOAPClient(object):
+    """This provide a direct access to the SOAP client, who are cached.
+    """
 
     def __init__(self, settings):
         if not settings.repository_url:
-            # Settings are invalid. This happens during KSS validation, raise NotFound.
+            # Settings are invalid.
             raise NotFound()
         self.settings = settings
 
@@ -92,13 +117,14 @@ class SOAPClient(object):
         """
         client = suds.client.Client(
             '/'.join((self.settings.repository_url, service)) + '?wsdl')
+        # We must specify service and port for Nuxeo
         client.set_options(service=service, port=service + 'Port')
         if self.settings.repository_user:
             if self.settings.repository_password is None:
                 raise SOAPConnectorError(
                     u'Settings specify user and not password.')
             auth = suds.wsse.Security()
-            # Timestamp must be included, and be first for alfresco.
+            # Timestamp must be included, and be first for Alfresco.
             auth.tokens.append(suds.wsse.Timestamp())
             auth.tokens.append(suds.wsse.UsernameToken(
                     self.settings.repository_user,
@@ -121,6 +147,9 @@ class SOAPClient(object):
     def object(self):
         return self._create_client('ObjectService')
 
+    @CachedProperty
+    def discovery(self):
+        return self._create_client('DiscoveryService')
 
 
 class SOAPConnector(object):
@@ -132,43 +161,74 @@ class SOAPConnector(object):
         self._repository_id = None
         self._repository_info = None
         self._root_id = None
-        self._factory = None
-
-    def _create(self, result, is_root=False):
-        assert self._factory is not None
-        return self._factory(
-            properties_to_dict(result.properties),
-            is_root=is_root)
 
     @soap_error
-    def get_object_by_path(self, path, is_root=False):
-        return self._create(
+    @soap_cache
+    def get_object_by_path(self, path, root=False):
+        return properties_to_dict(
             self._client.object.getObjectByPath(
                 repositoryId=self._repository_id,
                 path=path,
                 filter='*'),
-            is_root=is_root)
+            root=root)
 
     @soap_error
-    def get_object_by_cmis_id(self, cmis_id, is_root=False):
-        return self._create(
+    @soap_cache
+    def get_object_by_cmis_id(self, cmis_id, root=False):
+        return properties_to_dict(
             self._client.object.getObject(
                 repositoryId=self._repository_id,
                 objectId=cmis_id,
                 filter='*'),
-            is_root=is_root)
+            root=root)
 
     @soap_error
-    def get_object_children(self, cmis_object):
-        create = lambda c: self._create(c.objectInFolder.object)
-        return map(create, self._client.navigation.getDescendants(
+    @soap_cache
+    def get_object_children(self, cmis_id):
+        convert = lambda c: properties_to_dict(c.objectInFolder.object)
+        return map(convert, self._client.navigation.getDescendants(
                 repositoryId=self._repository_id,
-                folderId=cmis_object.CMISId(),
+                folderId=cmis_id,
                 depth=1,
                 filter='*'))
 
     @soap_error
-    def get_object_content(self, cmis_object):
+    @soap_cache
+    def get_object_parent(self, cmis_id):
+        root_id = self._root['cmis:objectId']
+        if cmis_id == root_id:
+            return None
+        parent = self._client.navigation.getObjectParents(
+                repositoryId=self._repository_id,
+                objectId=cmis_id,
+                filter='*')
+        if not len(parent):
+            return None
+        return properties_to_dict(parent[0].object, root=root_id)
+
+    def get_object_parents(self, cmis_id):
+        parents = []
+        parent = self.get_object_parent(cmis_id)
+        while parent is not None:
+            parents.append(parent)
+            cmis_id = parent['cmis:objectId']
+            parent = self.get_object_parent(cmis_id)
+        return parents
+
+    @soap_error
+    def query_for_objects(self, query, start=None, count=None):
+        result = self._client.discovery.query(
+            repositoryId=self._repository_id,
+            statement=query,
+            searchAllVersions=False)
+        if result.numItems:
+            return map(
+                lambda c: properties_to_dict(c, prefix='R.'),
+                result.objects)
+        return []
+
+    @soap_error
+    def get_object_content(self, cmis_id):
 
         def read_stream(stream):
             if isinstance(stream, suds.sax.text.Text):
@@ -178,7 +238,7 @@ class SOAPConnector(object):
 
         content = self._client.object.getContentStream(
             repositoryId=self._repository_id,
-            objectId=cmis_object.CMISId())
+            objectId=cmis_id)
         return CMISFileResult(
             filename=content.filename,
             length=content.length,
@@ -186,12 +246,9 @@ class SOAPConnector(object):
             mimetype=content.mimeType)
 
     @soap_error
-    def start(self, factory):
+    def start(self):
         if self._repository_id is not None:
             return self._root
-        # We can't get factory as a parameter in __init_,
-        # because we are an adapter.
-        self._factory = factory
 
         # Find repository id
         repositories = self._client.repository.getRepositories()
@@ -214,11 +271,11 @@ class SOAPConnector(object):
         if self._settings.repository_path:
             self._root = self.get_object_by_path(
                 self._settings.repository_path,
-                is_root=True)
+                root=True)
         else:
             self._root = self.get_object_by_cmis_id(
                 self.get_repository_info().rootFolderId,
-                is_root=True)
+                root=True)
         return self._root
 
     @soap_error

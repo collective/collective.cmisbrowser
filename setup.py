@@ -1,4 +1,4 @@
-import os
+import os, sys
 from setuptools import setup, find_packages
 
 version = '1.0dev'
@@ -11,6 +11,16 @@ long_description = (
     + '\n' +
     read('docs/HISTORY.txt')
     )
+requires = [
+    "setuptools",
+    "plone.app.content",
+    "plone.app.form",
+    "suds",
+    ]
+if sys.version_info < (2, 6):
+    requires += [
+        "uuid"
+        ]
 
 setup(name='collective.cmisbrowser',
       version=version,
@@ -30,10 +40,5 @@ setup(name='collective.cmisbrowser',
       namespace_packages=['collective'],
       include_package_data=True,
       zip_safe=False,
-      install_requires=[
-          "setuptools",
-          "plone.app.content",
-          "plone.app.form",
-          "suds",
-          ],
+      install_requires=requires,
       )

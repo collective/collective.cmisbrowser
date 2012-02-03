@@ -4,6 +4,7 @@
 # $Id$
 
 import logging
+import uuid
 
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 
@@ -14,7 +15,7 @@ from zope.interface import implements
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.schema.fieldproperty import FieldProperty
 
-from collective.cmisbrowser.cmis.api import CMISObjectAPI
+from collective.cmisbrowser.cmis.api import CMISZopeAPI
 from collective.cmisbrowser.errors import CMISConnectorError
 from collective.cmisbrowser.errors import CMISErrorTraverser
 from collective.cmisbrowser.interfaces import ICMISBrowser
@@ -33,7 +34,7 @@ class CMISTraverser(object):
 
     def get_api(self):
         # This will always be called only one time.
-        return CMISObjectAPI(self.browser)
+        return CMISZopeAPI(self.browser)
 
     def browserDefault(self, request):
         try:
@@ -69,6 +70,12 @@ class CMISBrowser(Container):
     repository_password = FieldProperty(ICMISBrowser['repository_password'])
     folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
+    _uid = None
+
+    def UID(self):
+        if self._uid is None:
+            self._uid = str(uuid.uuid1())
+        return self._uid
 
     def browserDefault(self, request):
         return CMISTraverser(self).browserDefault(request)
