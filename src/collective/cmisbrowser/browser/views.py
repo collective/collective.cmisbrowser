@@ -10,6 +10,8 @@ from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 from zope.datetime import rfc1123_date
 
+CHUNK_SIZE = 1<<16              # 64K
+
 
 class CMISFileResultView(BrowserView):
     """Return a file result, with correct headers.
@@ -35,7 +37,14 @@ class CMISFileResultView(BrowserView):
         # We don't support advanced streaming (yet).
         response.setHeader(
             'Accept-Ranges', None)
-        return self.context.stream
+        if self.context.data is not None:
+            return self.context.data
+        # We have a stream, nice !
+        chunk = self.context.stream.read(CHUNK_SIZE)
+        while chunk:
+            response.write(chunk)
+            chunk = self.context.stream.read(CHUNK_SIZE)
+        return ''
 
 
 class CMISStaleResultView(BrowserView):

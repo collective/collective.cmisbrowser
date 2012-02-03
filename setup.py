@@ -15,7 +15,19 @@ requires = [
     "setuptools",
     "plone.app.content",
     "plone.app.form",
+    "plone.app.layout",
+    "plone.memoize",
+    "zope.annotation",
+    "zope.cachedescriptors",
+    "zope.component",
+    "zope.datetime",
+    "zope.formlib",
+    "zope.interface",
+    "zope.publisher",
+    "zope.schema",
+    "zope.traversing",
     "suds",
+    "cmislib",
     ]
 if sys.version_info < (2, 6):
     requires += [

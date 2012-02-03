@@ -55,6 +55,7 @@ class CMISSettingsAdapter(object):
     repository_path = configurable_string('repository_path')
     repository_user = configurable_string('repository_user')
     repository_password = configurable_string('repository_password')
+    repository_connector = configurable_string('repository_connector')
     folder_view = configurable_string('folder_view')
     proxy = configurable_string('proxy')
 

@@ -30,6 +30,14 @@ folder_view_source = SimpleVocabulary([
             value='folder_tabular_view',
             title=_plone('Tabular view'))])
 
+connector_source = SimpleVocabulary([
+        SimpleTerm(
+            value='soap',
+            title=_('Connection SOAP')),
+        SimpleTerm(
+            value='rest',
+            title=_('Connection REST'))])
+
 
 
 class ICMISSettings(Interface):
@@ -39,6 +47,8 @@ class ICMISSettings(Interface):
         title=_(u'CMIS repository URI'))
     repository_name = schema.TextLine(
         title=_(u'CMIS repository name'),
+        description=_(u'If you have a federated CMIS repository, you have to type '
+                      u'you have to type the name of the repository you want to access.'),
         required=False)
     repository_path = schema.TextLine(
         title=_(u'CMIS start folder path'),
@@ -51,6 +61,12 @@ class ICMISSettings(Interface):
     repository_password = schema.Password(
         title=_(u'Password to access CMIS repository'),
         required=False)
+    repository_connector = schema.Choice(
+        title=_('CMIS connection type to the repository'),
+        description=_(u'Select if you want to connect to the CMIS repository using SOAP or REST.'),
+        source=connector_source,
+        default='soap',
+        required=True)
     folder_view = schema.Choice(
         title=_(u'Plone template used to render folders'),
         description=_(u'Select a default plone template to render folders.'),
@@ -84,7 +100,48 @@ class IRSSSetting(Interface):
 
 class ICMISConnector(Interface):
     """Connect to a CMIS repository.
+
+    Return object here are always simple directionaries containing the
+    CMIS properties. Those are not Zope compatible objects. For those,
+    refer to ICMISZopeAPI.
+
+    This is an abstraction layer for REST and SOAP API.
     """
+
+    def start():
+        """Initialize the connector, and return a object representing
+        the root object for this connector.
+        """
+
+    def get_object_by_path(path, root=False):
+        """Return an object by its path, adjusting its type if it is a
+        root.
+        """
+
+    def get_object_by_cmis_id(cmis_id, root=False):
+        """Return an object by its id, adjusting its if it is a root.
+        """
+
+    def get_object_children(cmis_id):
+        """Return a list of objects directly contained in the one
+        specified by its id.
+        """
+
+    def get_object_parent(cmis_id):
+        """Return a list of objects that are all parents of the one
+        specified by its id. Stop at the root of the connector.
+        """
+
+    def query_for_objects(query, start=None, count=None):
+        """Execute the given CMISQL query, and return the result as a
+        list of objects.
+        """
+
+    def get_object_content(cmis_id):
+        """Return an ICMISFileResult representing the data associated
+        with the specified id. This is not applicable on non-fillable
+        objects.
+        """
 
 
 class ICMISZopeAPI(Interface):

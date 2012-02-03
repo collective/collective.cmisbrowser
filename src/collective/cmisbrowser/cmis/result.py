@@ -17,7 +17,6 @@ from zope.interface import implements
 
 from collective.cmisbrowser.interfaces import ICMISStaleResult, ICMISFileResult
 
-
 class CMISStaleResult(Implicit):
     """An unchanged file result from CMIS.
     """
@@ -38,10 +37,11 @@ class CMISFileResult(Implicit):
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
-    def __init__(self, filename, length, stream, mimetype):
+    def __init__(self, filename, length, mimetype, stream=None, data=None):
         self.filename = filename
         self.length = length
-        self.stream = stream
         self.mimetype = mimetype
+        self.stream = stream
+        self.data = data
 
 InitializeClass(CMISFileResult)

@@ -68,6 +68,7 @@ class CMISBrowser(Container):
     repository_path = FieldProperty(ICMISBrowser['repository_path'])
     repository_user = FieldProperty(ICMISBrowser['repository_user'])
     repository_password = FieldProperty(ICMISBrowser['repository_password'])
+    repository_connector = FieldProperty(ICMISBrowser['repository_connector'])
     folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
     _uid = None
@@ -104,6 +105,6 @@ class CMISBrowser(Container):
 CMISBrowserFactory = Factory(CMISBrowser, title=_(u"Create CMIS Browser"))
 
 
-def browser_cloned_event(browser, event):
+def browser_changed_event(browser, event):
     # When we copy a browser, we get a new one. Reset its uid.
     browser._uid = None

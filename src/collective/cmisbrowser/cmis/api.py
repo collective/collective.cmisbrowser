@@ -8,6 +8,7 @@ import urllib
 
 from Acquisition import aq_inner
 from zExceptions import NotFound
+from zope.component import getAdapter
 from zope.interface import implements
 
 from collective.cmisbrowser.cmis.content import CMISContent, CMISDocument
@@ -42,7 +43,7 @@ class CMISZopeAPI(object):
 
     def __init__(self, context):
         self.context = context
-        self.connector = ICMISConnector(context)
+        self.connector = getAdapter(context, ICMISConnector, name=context.repository_connector)
         self.root = self._build(
             parent=self.context,
             content=self.connector.start())

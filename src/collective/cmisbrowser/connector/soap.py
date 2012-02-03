@@ -59,7 +59,7 @@ def soap_error(wrapped):
 
 
 def soap_cache(wrapped):
-    # Default cache time is one minute
+    # Default cache time is two minute
 
     def get_cache_key(method, self, id_or_path, *args, **kwargs):
         return '#'.join((
@@ -160,7 +160,7 @@ class SOAPConnector(object):
         self._client = SOAPClient(settings)
         self._repository_id = None
         self._repository_info = None
-        self._root_id = None
+        self._root = None
 
     @soap_error
     @soap_cache
@@ -242,8 +242,8 @@ class SOAPConnector(object):
         return CMISFileResult(
             filename=content.filename,
             length=content.length,
-            stream=read_stream(content.stream),
-            mimetype=content.mimeType)
+            mimetype=content.mimeType,
+            data=read_stream(content.stream))
 
     @soap_error
     def start(self):

@@ -5,6 +5,14 @@
      factory=".soap.SOAPConnector"
      for="..interfaces.ICMISSettings"
      provides="..interfaces.ICMISConnector"
+     name="soap"
+     />
+
+  <adapter
+     factory=".rest.RESTConnector"
+     for="..interfaces.ICMISSettings"
+     provides="..interfaces.ICMISConnector"
+     name="rest"
      />
 
 </configure>

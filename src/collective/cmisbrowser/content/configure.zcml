@@ -16,9 +16,15 @@
      />
 
   <subscriber
-     handler=".cmisbrowser.browser_cloned_event"
+     handler=".cmisbrowser.browser_changed_event"
      for="..interfaces.ICMISBrowser
           OFS.interfaces.IObjectClonedEvent"
+     />
+
+  <subscriber
+     handler=".cmisbrowser.browser_changed_event"
+     for="..interfaces.ICMISBrowser
+          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
      />
 
 </configure>
