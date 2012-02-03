@@ -15,4 +15,10 @@
      name="collective.cmisbrowser.CMISBrowser"
      />
 
+  <subscriber
+     handler=".cmisbrowser.browser_cloned_event"
+     for="..interfaces.ICMISBrowser
+          OFS.interfaces.IObjectClonedEvent"
+     />
+
 </configure>

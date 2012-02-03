@@ -103,3 +103,7 @@ class CMISBrowser(Container):
 
 CMISBrowserFactory = Factory(CMISBrowser, title=_(u"Create CMIS Browser"))
 
+
+def browser_cloned_event(browser, event):
+    # When we copy a browser, we get a new one. Reset its uid.
+    browser._uid = None

@@ -3,6 +3,8 @@
 # See also LICENSE.txt
 # $Id$
 
+import urllib
+
 
 from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
@@ -18,7 +20,8 @@ class CMISFileResultView(BrowserView):
         response = self.request.response
         response.setHeader(
             'Content-Disposition',
-            'inline;filename=%s' % self.context.filename)
+            'inline;filename=%s' % urllib.quote(
+                self.context.filename.encode('utf-8')))
         response.setHeader(
             'Content-Length',
             '%s' % self.context.length)
