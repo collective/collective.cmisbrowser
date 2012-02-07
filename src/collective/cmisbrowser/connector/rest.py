@@ -7,6 +7,9 @@ import time
 import logging
 
 from cmislib.model import CmisClient
+import cmislib.exceptions
+
+from zExceptions import NotFound
 
 from plone.memoize import ram
 from zope.interface import implements
@@ -25,15 +28,28 @@ class RESTConnectorError(CMISConnectorError):
     pass
 
 
+# Useful decorators
+
+def rest_error(wrapped):
+
+    def wrapper(self, *args, **kwargs):
+        try:
+            return wrapped(self, *args, **kwargs)
+        except cmislib.exceptions.ObjectNotFoundException:
+            raise NotFound()
+        except cmislib.exceptions.CmisException, error:
+            raise RESTConnectorError(error.__class__.__name__)
+
+    return wrapper
+
 def rest_cache(wrapped):
-    # Default cache time is two minute
 
     def get_cache_key(method, self, id_or_path, *args, **kwargs):
         return '#'.join((
                 self._settings.UID(),
                 self._repository_id,
                 id_or_path.encode('ascii', 'xmlcharrefreplace'),
-                str(time.time() // (2 *60))))
+                str(time.time() // (self._settings.repository_cache * 60))))
 
     return ram.cache(get_cache_key)(wrapped)
 
@@ -68,23 +84,27 @@ class RESTConnector(object):
         self._cache[cmis_id] = cmis_object
         return cmis_object
 
+    @rest_error
     @rest_cache
     def get_object_by_path(self, path, root=False):
         return cmis_object_to_dict(
             self._repository.getObjectByPath(path),
             root=root)
 
+    @rest_error
     @rest_cache
     def get_object_by_cmis_id(self, cmis_id, root=False):
         return cmis_object_to_dict(
             self._get_cmis_object(cmis_id),
             root=root)
 
+    @rest_error
     @rest_cache
     def get_object_children(self, cmis_id):
         convert = lambda c: cmis_object_to_dict(c)
         return map(convert, self._get_cmis_object(cmis_id).getChildren())
 
+    @rest_error
     @rest_cache
     def get_object_parent(self, cmis_id):
         root_id = self._root['cmis:objectId']
@@ -105,10 +125,12 @@ class RESTConnector(object):
             parent = self.get_object_parent(cmis_id)
         return parents
 
+    @rest_error
     def query_for_objects(self, query, start=None, count=None):
         convert = lambda c: cmis_object_to_dict(c)
         return map(convert, self._repository.query(query))
 
+    @rest_error
     def get_object_content(self, cmis_id):
         cmis_object = self._get_cmis_object(cmis_id)
         cmis_properties = cmis_object.getProperties()
@@ -118,6 +140,7 @@ class RESTConnector(object):
             stream=cmis_object.getContentStream(),
             mimetype=cmis_properties['cmis:contentStreamMimeType'])
 
+    @rest_error
     def start(self):
         if self._repository is not None:
             return self._root

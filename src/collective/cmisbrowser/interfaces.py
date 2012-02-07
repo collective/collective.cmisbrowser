@@ -67,6 +67,11 @@ class ICMISSettings(Interface):
         source=connector_source,
         default='soap',
         required=True)
+    repository_cache = schema.Int(
+        title=_('Time in minutes CMIS information should be cached'),
+        min=0,
+        default=5,
+        required=True)
     folder_view = schema.Choice(
         title=_(u'Plone template used to render folders'),
         description=_(u'Select a default plone template to render folders.'),

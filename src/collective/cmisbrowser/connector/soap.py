@@ -57,16 +57,14 @@ def soap_error(wrapped):
 
     return wrapper
 
-
 def soap_cache(wrapped):
-    # Default cache time is two minute
 
     def get_cache_key(method, self, id_or_path, *args, **kwargs):
         return '#'.join((
                 self._settings.UID(),
                 self._repository_id,
                 id_or_path.encode('ascii', 'xmlcharrefreplace'),
-                str(time.time() // (2 *60))))
+                str(time.time() // (self._settings.repository_cache * 60))))
 
     return ram.cache(get_cache_key)(wrapped)
 
@@ -118,7 +116,10 @@ class SOAPClient(object):
         client = suds.client.Client(
             '/'.join((self.settings.repository_url, service)) + '?wsdl')
         # We must specify service and port for Nuxeo
-        client.set_options(service=service, port=service + 'Port')
+        client.set_options(
+            service=service,
+            port=service + 'Port',
+            cachingpolicy=1)
         if self.settings.repository_user:
             if self.settings.repository_password is None:
                 raise SOAPConnectorError(

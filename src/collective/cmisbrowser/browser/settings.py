@@ -23,21 +23,34 @@ class CMISSettings(ControlPanelForm):
     form_fields = form.Fields(ICMISSettings)
 
 
-def configurable_string(name):
+class ConfigString(object):
 
-    def getter(self):
-        value = getattr(self._properties, name, None)
+    def __init__(self, name):
+        self.name = name
+
+    def getter(prop, self):
+        value = getattr(self._properties, prop.name, None)
         if not value:
-            return self._default.get(name)
+            return self._default.get(prop.name)
         return value
 
-    def setter(self, value):
+    def setter(prop, self, value):
         if value is None:
             # Plone properties doesn't support always None
             value = ''
-        self._properties._updateProperty(name, value)
+        self._properties._updateProperty(prop.name, value)
 
-    return property(getter, setter)
+    def property(prop):
+        return property(prop.getter, prop.setter)
+
+
+class ConfigInteger(ConfigString):
+
+    def getter(prop, self):
+        try:
+            return int(super(ConfigInteger, prop).getter(self))
+        except (TypeError, ValueError):
+            return self._default.get(prop.name)
 
 
 class CMISSettingsAdapter(object):
@@ -50,14 +63,15 @@ class CMISSettingsAdapter(object):
         self._properties = properties_tool.cmisbrowser_properties
 
     # Define overridable configuration entries.
-    repository_url = configurable_string('repository_url')
-    repository_name = configurable_string('repository_name')
-    repository_path = configurable_string('repository_path')
-    repository_user = configurable_string('repository_user')
-    repository_password = configurable_string('repository_password')
-    repository_connector = configurable_string('repository_connector')
-    folder_view = configurable_string('folder_view')
-    proxy = configurable_string('proxy')
+    repository_url = ConfigString('repository_url').property()
+    repository_name = ConfigString('repository_name').property()
+    repository_path = ConfigString('repository_path').property()
+    repository_user = ConfigString('repository_user').property()
+    repository_password = ConfigString('repository_password').property()
+    repository_connector = ConfigString('repository_connector').property()
+    repository_cache = ConfigInteger('repository_cache').property()
+    folder_view = ConfigString('folder_view').property()
+    proxy = ConfigString('proxy').property()
 
 
 @implementer(ICMISSettings)

@@ -304,6 +304,8 @@ class CMISFolder(CMISContent):
                 orphan=0)
         return contents
 
+    security.declareProtected(View, 'synContentValues')
+    synContentValues = getFolderContents
 
 InitializeClass(CMISFolder)
 

@@ -6,7 +6,14 @@
 import logging
 import uuid
 
+from AccessControl import ClassSecurityInfo
+from Products.CMFDefault.permissions import View
 from ZPublisher.BaseRequest import DefaultPublishTraverse
+try:
+    # Support Zope 2.12+
+    from App.class_init import InitializeClass
+except ImportError:
+    from Globals import InitializeClass
 
 from plone.app.content.container import Container
 from zope.component.factory import Factory
@@ -62,6 +69,7 @@ class CMISBrowser(Container):
     portal_type = "CMIS Browser"
     # Make sure to disable comments
     allow_discussion = False
+    security = ClassSecurityInfo()
 
     repository_url = FieldProperty(ICMISBrowser['repository_url'])
     repository_name = FieldProperty(ICMISBrowser['repository_name'])
@@ -69,6 +77,7 @@ class CMISBrowser(Container):
     repository_user = FieldProperty(ICMISBrowser['repository_user'])
     repository_password = FieldProperty(ICMISBrowser['repository_password'])
     repository_connector = FieldProperty(ICMISBrowser['repository_connector'])
+    repository_cache = FieldProperty(ICMISBrowser['repository_cache'])
     folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
     _uid = None
@@ -83,6 +92,15 @@ class CMISBrowser(Container):
 
     def publishTraverse(self, request, name):
         return CMISTraverser(self).publishTraverse(request, name)
+
+    security.declareProtected(View, 'synContentValues')
+    def synContentValues(self):
+        # For RSS, return content of the root of the connection.
+        try:
+            return CMISZopeAPI(self).root.synContentValues()
+        except CMISConnectorError:
+            logger.exception('Error while accessing CMIS repository')
+            return []
 
     # Implement IContrainTypes, you cannot add anything here.
 
@@ -101,6 +119,8 @@ class CMISBrowser(Container):
     def allowedContentTypes(self):
         return []
 
+
+InitializeClass(CMISBrowser)
 
 CMISBrowserFactory = Factory(CMISBrowser, title=_(u"Create CMIS Browser"))
 
