@@ -71,7 +71,7 @@ def soap_cache(wrapped):
 
 # Utility to convert SOAP-structure to simple dict.
 
-def properties_to_dict(properties, prefix=None, root=False):
+def properties_to_dict(properties, prefix=None, root=False, identifier=None):
     values = []
     entry = properties.properties.__dict__
 
@@ -96,6 +96,8 @@ def properties_to_dict(properties, prefix=None, root=False):
     if root:
         if isinstance(root, bool) or root == result['cmis:objectId']:
             result['cmis:objectTypeId'] = 'cmisbrowser:root'
+    if identifier:
+        result['cmisbrowser:identifier'] = identifier
     return result
 
 
@@ -186,12 +188,15 @@ class SOAPConnector(object):
     @soap_error
     @soap_cache
     def get_object_children(self, cmis_id):
-        convert = lambda c: properties_to_dict(c.objectInFolder.object)
+        convert = lambda c: properties_to_dict(
+            c.objectInFolder.object,
+            identifier=getattr(c.objectInFolder, 'pathSegment', None))
         return map(convert, self._client.navigation.getDescendants(
                 repositoryId=self._repository_id,
                 folderId=cmis_id,
                 depth=1,
-                filter='*'))
+                filter='*',
+                includePathSegment=True))
 
     @soap_error
     @soap_cache

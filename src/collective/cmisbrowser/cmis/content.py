@@ -104,12 +104,12 @@ class CMISContent(Implicit):
 
     security.declareProtected(View, 'getId')
     def getId(self):
-        path = self._properties.get('cmis:path')
-        if path is not None:
-            identifier = encode_identifier(path.rsplit('/', -1)[-1])
-            if identifier:
-                return identifier
-        return None
+        identifier = self._properties.get('cmisbrowser:identifier')
+        if identifier is None:
+            path = self._properties.get('cmis:path')
+            if path is not None:
+                identifier = encode_identifier(path.rsplit('/', -1)[-1])
+        return identifier
 
     security.declareProtected(View, 'getObject')
     def getObject(self):
@@ -253,10 +253,10 @@ class CMISDocument(CMISContent):
             return CMISErrorTraverser(self.getCMISBrowser())
 
     def getId(self):
-        # We have to use the name here, there are no paths
-        identifier = encode_identifier(self._properties.get('cmis:name'))
+        identifier = self._properties.get('cmisbrowser:identifier')
         if identifier is None:
-            identifier = super(CMISDocument, self).getId()
+            # We have to use the name here, there are no paths
+            identifier = encode_identifier(self._properties.get('cmis:name'))
         return identifier
 
     def Format(self):
