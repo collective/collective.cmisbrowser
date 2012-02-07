@@ -111,10 +111,10 @@ class RESTConnector(object):
         if cmis_id == root_id:
             return None
         cmis_object = self._get_cmis_object(cmis_id)
-        parent = cmis_object.getObjectParents()
+        parent = list(cmis_object.getObjectParents())
         if not len(parent):
             return None
-        return cmis_object_to_dict(parent[0].object, root=root_id)
+        return cmis_object_to_dict(parent[0], root=root_id)
 
     def get_object_parents(self, cmis_id):
         parents = []
