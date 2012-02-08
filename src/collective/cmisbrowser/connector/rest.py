@@ -57,6 +57,8 @@ def rest_cache(wrapped):
 def cmis_object_to_dict(cmis_object, root=False):
     # Copy the dict to prevent modification of the cached cmis_object.
     properties = cmis_object.getProperties().copy()
+    if 'cmisra:pathSegment' in properties:
+        properties['cmisbrowser:identifier'] = properties['cmisra:pathSegment']
     if root:
         if isinstance(root, bool) or root == properties['cmis:objectId']:
             properties['cmis:objectTypeId'] = 'cmisbrowser:root'
@@ -101,8 +103,10 @@ class RESTConnector(object):
     @rest_error
     @rest_cache
     def get_object_children(self, cmis_id):
-        convert = lambda c: cmis_object_to_dict(c)
-        return map(convert, self._get_cmis_object(cmis_id).getChildren())
+        return map(
+            lambda c: cmis_object_to_dict(c),
+            self._get_cmis_object(cmis_id).getChildren(
+                includePathSegment=True))
 
     @rest_error
     @rest_cache
@@ -111,10 +115,12 @@ class RESTConnector(object):
         if cmis_id == root_id:
             return None, None
         cmis_object = self._get_cmis_object(cmis_id)
-        parent = list(cmis_object.getObjectParents())
+        parent = list(cmis_object.getObjectParents(
+                includeRelativePathSegment=True))
         if not len(parent):
             return None, None
-        return cmis_object_to_dict(parent[0], root=root_id), None
+        return (cmis_object_to_dict(parent[0], root=root_id),
+                parent[0].getProperties().get('cmisra:relativePathSegment'))
 
     def get_object_parents(self, cmis_id):
         parents = []
