@@ -5,6 +5,7 @@
 
 import time
 import logging
+import urllib2
 
 from cmislib.model import CmisClient
 import cmislib.exceptions
@@ -35,6 +36,9 @@ def rest_error(wrapped):
     def wrapper(self, *args, **kwargs):
         try:
             return wrapped(self, *args, **kwargs)
+        except urllib2.URLError, error:
+            raise RESTConnectorError(
+                u'Network transport error: %s' % error.args[0][1])
         except cmislib.exceptions.ObjectNotFoundException:
             raise NotFound()
         except cmislib.exceptions.CmisException, error:
