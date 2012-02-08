@@ -111,6 +111,9 @@ class CMISContent(Implicit):
                 identifier = encode_identifier(path.rsplit('/', -1)[-1])
         return identifier
 
+    def _setId(self, identifier):
+        self._properties['cmisbrowser:identifier'] = identifier
+
     security.declareProtected(View, 'getObject')
     def getObject(self):
         # Some view expect to have catalog brains

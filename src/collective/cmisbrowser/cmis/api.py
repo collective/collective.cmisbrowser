@@ -55,17 +55,20 @@ class CMISZopeAPI(object):
         else:
 
             def get_parent(properties):
-                parent = self.context
-                for ancestor in reversed(
-                    self.connector.get_object_parents(
-                        properties['cmis:objectId'])):
-                    parent = get_cmis_factory(ancestor)(
-                        ancestor, self).__of__(parent)
-                return parent
+                context = self.context
+                parents, identifier = self.connector.get_object_parents(
+                    properties['cmis:objectId'])
+                if identifier:
+                    properties['cmisbrowser:identifier'] = identifier
+                for ancestor in reversed(parents):
+                    context = get_cmis_factory(ancestor)(
+                        ancestor, self).__of__(context)
+                return context
 
         def build(properties):
+            parent = get_parent(properties)
             factory = get_cmis_factory(properties)
-            return factory(properties, self).__of__(get_parent(properties))
+            return factory(properties, self).__of__(parent)
 
         if content is not None:
             return build(content)

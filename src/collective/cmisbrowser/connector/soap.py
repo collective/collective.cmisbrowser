@@ -203,23 +203,28 @@ class SOAPConnector(object):
     def get_object_parent(self, cmis_id):
         root_id = self._root['cmis:objectId']
         if cmis_id == root_id:
-            return None
+            return None, None
         parent = self._client.navigation.getObjectParents(
                 repositoryId=self._repository_id,
                 objectId=cmis_id,
-                filter='*')
+                filter='*',
+                includeRelativePathSegment=True)
         if not len(parent):
-            return None
-        return properties_to_dict(parent[0].object, root=root_id)
+            return None, None
+        return (properties_to_dict(parent[0].object, root=root_id),
+                getattr(parent[0], 'relativePathSegment', None))
 
     def get_object_parents(self, cmis_id):
         parents = []
-        parent = self.get_object_parent(cmis_id)
-        while parent is not None:
-            parents.append(parent)
-            cmis_id = parent['cmis:objectId']
-            parent = self.get_object_parent(cmis_id)
-        return parents
+        current, identifier = self.get_object_parent(cmis_id)
+        while current is not None:
+            parents.append(current)
+            cmis_id = current['cmis:objectId']
+            parent, current_identifier = self.get_object_parent(cmis_id)
+            if current_identifier:
+                current['cmisbrowser:identifier'] = current_identifier
+            current = parent
+        return parents, identifier
 
     @soap_error
     def query_for_objects(self, query, start=None, count=None):

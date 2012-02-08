@@ -109,21 +109,24 @@ class RESTConnector(object):
     def get_object_parent(self, cmis_id):
         root_id = self._root['cmis:objectId']
         if cmis_id == root_id:
-            return None
+            return None, None
         cmis_object = self._get_cmis_object(cmis_id)
         parent = list(cmis_object.getObjectParents())
         if not len(parent):
-            return None
-        return cmis_object_to_dict(parent[0], root=root_id)
+            return None, None
+        return cmis_object_to_dict(parent[0], root=root_id), None
 
     def get_object_parents(self, cmis_id):
         parents = []
-        parent = self.get_object_parent(cmis_id)
-        while parent is not None:
-            parents.append(parent)
-            cmis_id = parent['cmis:objectId']
-            parent = self.get_object_parent(cmis_id)
-        return parents
+        current, identifier = self.get_object_parent(cmis_id)
+        while current is not None:
+            parents.append(current)
+            cmis_id = current['cmis:objectId']
+            parent, current_identifier = self.get_object_parent(cmis_id)
+            if current_identifier:
+                current['cmisbrowser:identifier'] = current_identifier
+            current = parent
+        return parents, identifier
 
     @rest_error
     def query_for_objects(self, query, start=None, count=None):
