@@ -161,10 +161,17 @@ class RESTConnector(object):
         if self._repository is not None:
             return self._root
 
+        options = {}
+        if self._settings.proxy:
+            options['proxy'] = {
+                'http': self._settings.proxy,
+                'https': self._settings.proxy}
+
         client = CmisClient(
             self._settings.repository_url,
             self._settings.repository_user,
-            self._settings.repository_password)
+            self._settings.repository_password,
+            **options)
 
         repositories = client.getRepositories()
         if self._settings.repository_name:
