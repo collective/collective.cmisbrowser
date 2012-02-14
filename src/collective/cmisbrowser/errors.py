@@ -17,10 +17,13 @@ class CMISConnectorError(ValueError):
         self.detail = detail
 
     def __str__(self):
-        message = ': '.join((self.__class__.__name__, self.message))
+        message = ': '.join((self.__class__.__name__, str(self.message)))
         if self.detail:
-            message = '\n'.join((message, self.detail))
-        return
+            message = '\n'.join((message, str(self.detail)))
+        return message
+
+    def __repr__(self):
+        return self.__str__(self)
 
     def send(self, request):
         IStatusMessage(request).addStatusMessage(self.message, type=u'error')

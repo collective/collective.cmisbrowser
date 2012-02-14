@@ -39,8 +39,11 @@ def soap_error(wrapped):
         try:
             return wrapped(self, *args, **kwargs)
         except urllib2.URLError, error:
+            if isinstance(error.args[0], tuple):
+                raise SOAPConnectorError(
+                    u'Network transport error: %s' % str(error.args[0]))
             raise SOAPConnectorError(
-                u'Network transport error: %s' % error.args[0][1])
+                u'Network error: %s' % error.args[0][1])
         except suds.transport.TransportError, error:
             raise SOAPConnectorError(
                 u'HTTP transport error, code %d' % error.httpcode,
@@ -110,15 +113,20 @@ class SOAPClient(object):
             # Settings are invalid.
             raise NotFound()
         self.settings = settings
+        self.ticket = None
+        self.proxies = {}
+        if settings.proxy:
+            self.proxies['http'] = settings.proxy
+            self.proxies['https'] = settings.proxy
 
     def _create_client(self, service):
         """Create an authenticated SOAP client to access an SOAP
         service.
         """
-        client = suds.client.Client(
-            '/'.join((self.settings.repository_url, service)) + '?wsdl')
         # We must specify service and port for Nuxeo
-        client.set_options(
+        client = suds.client.Client(
+            '/'.join((self.settings.repository_url, service)) + '?wsdl',
+            proxy=self.proxies,
             service=service,
             port=service + 'Port',
             cachingpolicy=1)
@@ -126,16 +134,13 @@ class SOAPClient(object):
             if self.settings.repository_password is None:
                 raise SOAPConnectorError(
                     u'Settings specify user and not password.')
-            auth = suds.wsse.Security()
             # Timestamp must be included, and be first for Alfresco.
+            auth = suds.wsse.Security()
             auth.tokens.append(suds.wsse.Timestamp())
             auth.tokens.append(suds.wsse.UsernameToken(
                     self.settings.repository_user,
                     self.settings.repository_password))
             client.set_options(wsse=auth)
-        if self.settings.proxy:
-            client.set_options(proxy={'http': self.settings.proxy,
-                                      'https': self.settings.proxy})
         return client.service
 
     @CachedProperty

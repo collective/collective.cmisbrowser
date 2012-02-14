@@ -37,8 +37,11 @@ def rest_error(wrapped):
         try:
             return wrapped(self, *args, **kwargs)
         except urllib2.URLError, error:
+            if isinstance(error.args[0], tuple):
+                raise RESTConnectorError(
+                    u'Network transport error: %s' % error.args[0][1])
             raise RESTConnectorError(
-                u'Network transport error: %s' % error.args[0][1])
+                u'Network error: %s' % str(error.args[0]))
         except cmislib.exceptions.ObjectNotFoundException:
             raise NotFound()
         except cmislib.exceptions.CmisException, error:
