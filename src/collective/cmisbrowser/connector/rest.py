@@ -37,8 +37,11 @@ def rest_error(wrapped):
         try:
             return wrapped(self, *args, **kwargs)
         except urllib2.URLError, error:
+            if isinstance(error.args[0], tuple):
+                raise RESTConnectorError(
+                    u'Network transport error: %s' % str(error.args[0][1]))
             raise RESTConnectorError(
-                u'Network transport error: %s' % error.args[0][1])
+                u'Network error: %s' % str(error.args[0]))
         except cmislib.exceptions.ObjectNotFoundException:
             raise NotFound()
         except cmislib.exceptions.CmisException, error:
@@ -158,10 +161,17 @@ class RESTConnector(object):
         if self._repository is not None:
             return self._root
 
+        options = {}
+        if self._settings.proxy:
+            options['proxy'] = {
+                'http': self._settings.proxy,
+                'https': self._settings.proxy}
+
         client = CmisClient(
             self._settings.repository_url,
             self._settings.repository_user,
-            self._settings.repository_password)
+            self._settings.repository_password,
+            **options)
 
         repositories = client.getRepositories()
         if self._settings.repository_name:

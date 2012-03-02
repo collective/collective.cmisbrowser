@@ -39,8 +39,11 @@ def soap_error(wrapped):
         try:
             return wrapped(self, *args, **kwargs)
         except urllib2.URLError, error:
+            if isinstance(error.args[0], tuple):
+                raise SOAPConnectorError(
+                    u'Network transport error: %s' % str(error.args[0][1]))
             raise SOAPConnectorError(
-                u'Network transport error: %s' % error.args[0][1])
+                u'Network error: %s' % str(error.args[0]))
         except suds.transport.TransportError, error:
             raise SOAPConnectorError(
                 u'HTTP transport error, code %d' % error.httpcode,
@@ -110,32 +113,35 @@ class SOAPClient(object):
             # Settings are invalid.
             raise NotFound()
         self.settings = settings
+        self.proxies = {}
+        if settings.proxy:
+            self.proxies['http'] = settings.proxy
+            self.proxies['https'] = settings.proxy
+
+        if self.settings.repository_user:
+            if self.settings.repository_password is None:
+                raise SOAPConnectorError(
+                    u'Settings specify user and not password.')
 
     def _create_client(self, service):
         """Create an authenticated SOAP client to access an SOAP
         service.
         """
-        client = suds.client.Client(
-            '/'.join((self.settings.repository_url, service)) + '?wsdl')
         # We must specify service and port for Nuxeo
-        client.set_options(
+        client = suds.client.Client(
+            '/'.join((self.settings.repository_url, service)) + '?wsdl',
+            proxy=self.proxies,
             service=service,
             port=service + 'Port',
             cachingpolicy=1)
         if self.settings.repository_user:
-            if self.settings.repository_password is None:
-                raise SOAPConnectorError(
-                    u'Settings specify user and not password.')
-            auth = suds.wsse.Security()
             # Timestamp must be included, and be first for Alfresco.
-            auth.tokens.append(suds.wsse.Timestamp())
+            auth = suds.wsse.Security()
+            auth.tokens.append(suds.wsse.Timestamp(validity=300))
             auth.tokens.append(suds.wsse.UsernameToken(
                     self.settings.repository_user,
                     self.settings.repository_password))
             client.set_options(wsse=auth)
-        if self.settings.proxy:
-            client.set_options(proxy={'http': self.settings.proxy,
-                                      'https': self.settings.proxy})
         return client.service
 
     @CachedProperty
@@ -271,6 +277,9 @@ class SOAPConnector(object):
                 raise SOAPConnectorError(
                     u'Unknown repository: %s' % (
                         self._settings.repository_name))
+        elif repositories is None:
+            raise SOAPConnectorError(
+                u"Cannot list available repositories.")
         elif len(repositories) == 1:
             repository = repositories[0]
         else:
