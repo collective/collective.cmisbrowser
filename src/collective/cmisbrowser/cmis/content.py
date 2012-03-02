@@ -13,6 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFDefault.permissions import View
 from Products.CMFPlone.PloneBatch import Batch
 from ZPublisher.BaseRequest import DefaultPublishTraverse
+from OFS.Traversable import Traversable
 
 try:
     # Support Zope 2.12+
@@ -44,17 +45,17 @@ default_zone = DateTime().timezone()
 logger = logging.getLogger('collective.cmisbrowser')
 
 
-class CMISContent(Implicit):
+class CMISContent(Implicit, Traversable):
     """Refer a Document in a CMIS repositories.
     Follows the Plone API as much as possible.
     """
     implements(ICMISContent)
     security = ClassSecurityInfo()
-    security.declareObjectProtected(View)
     isPrincipiaFolderish = 0
     # Make sure to disable comments
     allow_discussion = False
 
+    security.declareObjectProtected(View)
     security.declarePublic('portal_type')
     portal_type = 'CMIS Document'
     portal_icon = '++resource++collective.cmisbrowser.document.png'
@@ -94,13 +95,18 @@ class CMISContent(Implicit):
         default = DefaultPublishTraverse(self, request)
         return default.publishTraverse(request, name)
 
-    security.declareProtected(View, 'absolute_url')
-    def absolute_url(self):
-        url = aq_parent(aq_inner(self)).absolute_url()
+    def getPhysicalPath(self):
         identifier = self.getId()
         if identifier is not None:
-            url += '/' + identifier
-        return url
+            path = (identifier,)
+        else:
+            path = tuple()
+
+        parent = aq_parent(aq_inner(self))
+        if parent is not None:
+            path = parent.getPhysicalPath() + path
+
+        return path
 
     security.declareProtected(View, 'getId')
     def getId(self):
@@ -142,7 +148,8 @@ class CMISContent(Implicit):
 
     # IDublinCore implementation
     security.declareProtected(View, 'Identifier')
-    Identifier = absolute_url
+    def Identifier(self):
+        return self.absolute_url()
 
     security.declareProtected(View, 'Title')
     def Title(self):
@@ -274,7 +281,6 @@ class CMISFolder(CMISContent):
     security = ClassSecurityInfo()
     isPrincipiaFolderish = 1
 
-    security.declarePublic('portal_type')
     portal_type = 'CMIS Folder'
     portal_icon = '++resource++collective.cmisbrowser.folder.png'
 
@@ -321,6 +327,4 @@ class CMISRootFolder(CMISFolder):
 
 
 InitializeClass(CMISRootFolder)
-
-
 
