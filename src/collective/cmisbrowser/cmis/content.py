@@ -114,8 +114,8 @@ class CMISContent(Implicit, Traversable):
         if identifier is None:
             path = self._properties.get('cmis:path')
             if path is not None:
-                identifier = encode_identifier(path.rsplit('/', -1)[-1])
-        return identifier
+                identifier = path.rsplit('/', -1)[-1]
+        return encode_identifier(identifier)
 
     def _setId(self, identifier):
         self._properties['cmisbrowser:identifier'] = identifier
@@ -266,8 +266,8 @@ class CMISDocument(CMISContent):
         identifier = self._properties.get('cmisbrowser:identifier')
         if identifier is None:
             # We have to use the name here, there are no paths
-            identifier = encode_identifier(self._properties.get('cmis:name'))
-        return identifier
+            identifier = self._properties.get('cmis:name')
+        return encode_identifier(identifier)
 
     def Format(self):
         return self._properties.get('cmis:contentStreamFileName', 'text/html')
