@@ -2,6 +2,7 @@
    xmlns="http://namespaces.zope.org/zope"
    xmlns:i18n="http://namespaces.zope.org/i18n"
    xmlns:five="http://namespaces.zope.org/five"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
    i18n_domain="collective.cmisbrowser">
 
@@ -20,10 +21,18 @@
   <include package=".connector" />
   <include package=".browser" />
 
-  <genericsetup:registerProfile
+  <genericsetup:registerProfile zcml:condition="have plone-4"
      name="default"
      title="collective.cmisbrowser"
      directory="profiles/default"
+     description="Extension profile for collective.cmisbrowser."
+     provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:registerProfile zcml:condition="not-have plone-4"
+     name="default"
+     title="collective.cmisbrowser"
+     directory="profiles/default-plone3"
      description="Extension profile for collective.cmisbrowser."
      provides="Products.GenericSetup.interfaces.EXTENSION"
       />
