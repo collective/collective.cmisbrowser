@@ -213,6 +213,11 @@ class ICMISFolder(ICMISContent, INonStructuralFolder):
         """
 
 
+class ICMISRootFolder(ICMISFolder):
+    """A browsed root folder.
+    """
+
+
 class ICMISStaleResult(Interface):
     """Represent an unmodified result from CMIS.
     """

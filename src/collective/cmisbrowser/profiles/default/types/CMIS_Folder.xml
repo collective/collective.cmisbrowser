@@ -29,4 +29,8 @@
          url_expr="python: object.getCMISBrowser().absolute_url() + '/edit'" visible="True">
   <permission value="Modify portal content"/>
  </action>
+ <action title="Information" action_id="information" category="object" condition_expr=""
+    url_expr="python: object.getCMISBrowser().absolute_url() + '/information.html'" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
 </object>

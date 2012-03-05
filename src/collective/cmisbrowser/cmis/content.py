@@ -21,7 +21,7 @@ try:
 except ImportError:
     from Globals import InitializeClass
 
-from collective.cmisbrowser.interfaces import ICMISContent
+from collective.cmisbrowser.interfaces import ICMISContent, ICMISRootFolder
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder
 from collective.cmisbrowser.errors import CMISConnectorError
 from collective.cmisbrowser.errors import CMISErrorTraverser
@@ -320,6 +320,7 @@ InitializeClass(CMISFolder)
 
 
 class CMISRootFolder(CMISFolder):
+    implements(ICMISRootFolder)
 
     def getId(self):
         # The root must have an id of None (as they are the root of the URL).

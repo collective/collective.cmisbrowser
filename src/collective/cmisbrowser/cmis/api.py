@@ -48,6 +48,9 @@ class CMISZopeAPI(object):
             parent=self.context,
             content=self.connector.start())
 
+    def info(self):
+        return self.connector.get_repository_info()
+
     def _build(self, parent=None, content=None, contents=[]):
         if parent is not None:
             parent = aq_inner(parent)

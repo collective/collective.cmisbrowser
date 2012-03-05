@@ -36,6 +36,15 @@
      permission="zope2.View"
      />
 
+
+  <browser:page
+     for="..interfaces.ICMISBrowser"
+     name="information.html"
+     class=".views.CMISBrowserInfoView"
+     template="templates/cmisbrowserinfoview.pt"
+     permission="zope2.View"
+     />
+
   <browser:page
      for="..interfaces.ICMISBrowser"
      name="view"

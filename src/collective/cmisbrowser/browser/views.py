@@ -8,6 +8,8 @@ import urllib
 
 from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
+from collective.cmisbrowser.cmis.api import CMISZopeAPI
+from collective.cmisbrowser.interfaces import ICMISBrowser
 from zope.datetime import rfc1123_date
 
 CHUNK_SIZE = 1<<16              # 64K
@@ -89,4 +91,11 @@ class CMISBrowserErrorView(BrowserView):
             'no-cache, must-revalidate, post-check=0, pre-check=0')
         response.setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
         response.setHeader('Pragma', 'no-cache')
+        return self.index()
+
+
+class CMISBrowserInfoView(BrowserView):
+
+    def __call__(self):
+        self.info = CMISZopeAPI(self.context).info()
         return self.index()

@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="collective.cmisbrowser">
+  <body>
+    <div metal:fill-slot="main">
+      <tal:main-macro metal:define-macro="main">
+        <div tal:replace="structure provider:plone.abovecontent" />
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+        <h1 tal:content="context/Title"></h1>
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+        <h2 i18n:translate="">Repository information</h2>
+        <dl>
+          <dt i18n:translate="">Repository URL</dt>
+          <dd tal:content="context/repository_url"></dd>
+          <tal:name
+             tal:define="name view/info/repositoryName"
+             tal:condition="name">
+            <dt i18n:translate="">Repository name</dt>
+            <dd tal:content="name"></dd>
+          </tal:name>
+          <tal:description
+             tal:define="description view/info/repositoryDescription"
+             tal:condition="description">
+            <dt i18n:translate="">Repository description</dt>
+            <dd tal:content="description"></dd>
+          </tal:description>
+          <tal:vendor
+             tal:define="vendor view/info/vendorName"
+             tal:condition="vendor">
+            <dt i18n:translate="">Vendor Name</dt>
+            <dd tal:content="vendor"></dd>
+          </tal:vendor>
+          <tal:product
+             tal:define="product view/info/productName"
+             tal:condition="product">
+            <dt i18n:translate="">Product Name</dt>
+            <dd tal:content="product"></dd>
+          </tal:product>
+          <tal:version
+             tal:define="version view/info/productVersion"
+             tal:condition="version">
+            <dt i18n:translate="">Product Version</dt>
+            <dd tal:content="version"></dd>
+          </tal:version>
+        </dl>
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+        <div tal:replace="structure provider:plone.belowcontent" />
+      </tal:main-macro>
+    </div>
+  </body>
+</html>
