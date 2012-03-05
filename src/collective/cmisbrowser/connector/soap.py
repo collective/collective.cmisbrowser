@@ -52,7 +52,7 @@ def soap_error(wrapped):
             cmis_error = getattr(getattr(error.fault, 'detail', None), 'cmisFault', None)
             if cmis_error is not None:
                 # In case of object not found, we convert to a Zope error
-                if cmis_error.type == 'objectNotFound':
+                if cmis_error.type in self.object_not_found_exception:
                     raise NotFound()
             raise SOAPConnectorError(
                 error.fault.faultstring,
@@ -165,6 +165,7 @@ class SOAPConnector(object):
     implements(ICMISConnector)
 
     def __init__(self, settings):
+        self.object_not_found_exception = ['objectNotFound']
         self._settings = settings
         self._client = SOAPClient(settings)
         self._repository_id = None
@@ -296,6 +297,13 @@ class SOAPConnector(object):
             self._root = self.get_object_by_cmis_id(
                 self.get_repository_info().rootFolderId,
                 root=True)
+
+        # Alfresco 3. doesn't return the proper exception for object
+        # not found. Detect it and add it to the list.
+        info = self.get_repository_info()
+        if (info.productName.startswith('Alfresco') and
+            info.productVersion[0] < '4'):
+            self.object_not_found_exception.append('invalidArgument')
         return self._root
 
     @soap_error
