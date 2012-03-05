@@ -200,3 +200,7 @@ class RESTConnector(object):
                 self._repository.getRootFolder(),
                 root=True)
         return self._root
+
+    @rest_error
+    def get_repository_info(self):
+        return self._repository.getRepositoryInfo()
