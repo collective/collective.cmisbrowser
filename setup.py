@@ -34,6 +34,10 @@ if sys.version_info < (2, 6):
         "uuid"
         ]
 
+tests_requires = [
+    "Products.PloneTestCase"
+    ]
+
 setup(name='collective.cmisbrowser',
       version=version,
       description="CMIS repository browser for Plone",
@@ -53,4 +57,6 @@ setup(name='collective.cmisbrowser',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
+      tests_require = tests_requires,
+      extras_require = {'test': tests_requires},
       )

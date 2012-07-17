@@ -7,16 +7,24 @@ import unittest
 
 from zope.interface.verify import verifyObject
 from collective.cmisbrowser.interfaces import ICMISBrowser
-from collective.cmisbrowser.tests.base import CMISBrowserTestCase
+from collective.cmisbrowser.interfaces import ICMISSettings
+from collective.cmisbrowser.tests.base import CMISBrowserTestCase, TestSettings
 
 
 class CMISBrowserContentTestCase(CMISBrowserTestCase):
 
-    def test_browser(self):
+    def setUp(self):
+        CMISBrowserTestCase.setUp(self)
         self.loginAsPortalOwner()
-        browser = self.portal._getOb(
+        self.browser = self.portal._getOb(
             self.portal.invokeFactory('CMIS Browser', 'browser'))
-        self.assertTrue(verifyObject(ICMISBrowser, browser))
+
+    def test_browser(self):
+        """Verify interface from the browser.
+        """
+        self.assertTrue(verifyObject(ICMISBrowser, self.browser))
+        self.assertTrue(verifyObject(ICMISSettings, self.browser))
+        self.assertTrue(verifyObject(ICMISSettings, TestSettings()))
 
 
 def test_suite():
