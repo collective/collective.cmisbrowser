@@ -244,7 +244,6 @@ class CMISContent(Implicit, Traversable):
 InitializeClass(CMISContent)
 
 
-
 class CMISDocument(CMISContent):
     implements(ICMISDocument)
     security = ClassSecurityInfo()
@@ -270,7 +269,7 @@ class CMISDocument(CMISContent):
         return encode_identifier(identifier)
 
     def Format(self):
-        return self._properties.get('cmis:contentStreamFileName', 'text/html')
+        return self._properties.get('cmis:contentStreamMimeType', 'text/html')
 
 
 InitializeClass(CMISDocument)

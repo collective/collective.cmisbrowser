@@ -22,9 +22,12 @@ class CMISBrowserContentTestCase(CMISBrowserTestCase):
     def test_browser(self):
         """Verify interface from the browser.
         """
+        settings = TestSettings('soap')
         self.assertTrue(verifyObject(ICMISBrowser, self.browser))
         self.assertTrue(verifyObject(ICMISSettings, self.browser))
-        self.assertTrue(verifyObject(ICMISSettings, TestSettings()))
+        self.assertTrue(verifyObject(ICMISSettings, settings))
+        settings.configureBrowser(self.browser)
+        self.assertEqual(self.browser.repository_connector, 'soap')
 
 
 def test_suite():

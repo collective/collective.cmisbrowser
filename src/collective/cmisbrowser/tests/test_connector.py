@@ -22,7 +22,6 @@ class ConnectorTestCase(CMISBrowserTestCase):
     def setUp(self):
         CMISBrowserTestCase.setUp(self)
         self.settings = TestSettings(self.method)
-        self.settings.createTestContent()
 
     def test_start(self):
         """Test start, that retrieve the root of the connector.

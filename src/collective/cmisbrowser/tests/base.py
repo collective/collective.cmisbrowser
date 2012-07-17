@@ -41,16 +41,18 @@ class TestSettings(object):
             self.repository_url = os.environ.get(
                 'CMIS_REPOSITORY_URL_SOAP',
                 'http://localhost/alfresco/cmis')
-        self.repository_name = ''
-        self.repository_path = ''
+        self.repository_connector = method
+        self.repository_name = u''
+        self.repository_path = unicode(os.environ.get(
+                'CMIS_REPOSITORY_PATH', u''))
         self.repository_cache = 5
-        self.repository_user = os.environ.get(
-            'CMIS_REPOSITORY_USER', '')
-        self.repository_password = os.environ.get(
-            'CMIS_REPOSITORY_PASSWORD', '')
+        self.repository_user = unicode(os.environ.get(
+            'CMIS_REPOSITORY_USER', u''))
+        self.repository_password = unicode(os.environ.get(
+            'CMIS_REPOSITORY_PASSWORD', u''))
         self.repository_connector = method
         self.folder_view = 'folder_listing'
-        self.proxy = ''
+        self.proxy = None
 
     def UID(self):
         return '42'
@@ -70,6 +72,13 @@ class TestSettings(object):
     def _repository_root(self):
         repository = self._repository
         return repository.getRootFolder()
+
+    def configureBrowser(self, browser):
+        """Recopy the test settings in a browser.
+        """
+        for option in ICMISSettings.names():
+            if option in self.__dict__:
+                setattr(browser, option, self.__dict__[option])
 
     def createTestContent(self):
         """Create a test folder, /testfolder, with the following
@@ -121,7 +130,7 @@ class TestSettings(object):
 
         # We are now going to browse the testfolder
         self.repository_path = '/testfolder'
-
+        os.environ['CMIS_REPOSITORY_PATH'] = '/testfolder'
 
 
 @onsetup
@@ -135,6 +144,13 @@ def setup_product():
 
 setup_product()
 ptc.setupPloneSite(products=['collective.cmisbrowser'])
+
+@onsetup
+def cmis_test_content():
+    settings = TestSettings()
+    settings.createTestContent()
+
+cmis_test_content()
 
 class CMISBrowserTestCase(ptc.PloneTestCase):
     pass

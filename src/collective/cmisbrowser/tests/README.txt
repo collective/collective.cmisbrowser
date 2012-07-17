@@ -9,7 +9,6 @@ with the help of environment variables:
   export CMIS_REPOSITORY_PASSWORD='admin'
   bin/test
 
-
 A test folder called 'testfolder' will be create at the root of the
 repository, and some test content will be imported in it, using the
 REST API.
