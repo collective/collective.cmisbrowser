@@ -5,7 +5,10 @@
 
 import os
 
-from Products.Five import zcml
+try:
+    from Zope2.App.zcml import load_config
+except ImportError:
+    from Products.Five.zcml import load_config
 from Products.Five import fiveconfigure
 from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import onsetup
@@ -76,6 +79,8 @@ class TestSettings(object):
            |- hello.html
            |- documentation.txt
            |- soap@
+           |    |- info@
+           |    |    \- index.html
            |    \- specs.txt
            \- rest@
                 \- specs.txt
@@ -92,7 +97,7 @@ class TestSettings(object):
         folder = self._repository_root.createFolder('testfolder')
         folder.createDocumentFromString(
             'hello.html',
-            contentString='<p>Hello, this some basic test content.</p>',
+            contentString='<p>Hello, this some basic test content</p>',
             contentType='text/html')
         folder.createDocumentFromString(
             'documentation.txt',
@@ -103,6 +108,11 @@ class TestSettings(object):
             'specs.txt',
             contentString='Specification SOAP',
             contentType='text/plain')
+        info_folder = soap_folder.createFolder('info')
+        info_folder.createDocumentFromString(
+            'index.html',
+            contentString="<p>General Documentation about SOAP</p>",
+            contentType='text/html')
         rest_folder = folder.createFolder('rest')
         rest_folder.createDocumentFromString(
             'specs.txt',
@@ -118,7 +128,7 @@ class TestSettings(object):
 def setup_product():
     fiveconfigure.debug_mode = True
     import collective.cmisbrowser
-    zcml.load_config('configure.zcml', collective.cmisbrowser)
+    load_config('configure.zcml', collective.cmisbrowser)
     fiveconfigure.debug_mode = False
     ztc.installPackage('collective.cmisbrowser')
 

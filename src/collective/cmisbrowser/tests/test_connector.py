@@ -6,12 +6,12 @@
 from operator import itemgetter
 import unittest
 
-
 from zope.component import queryAdapter
 from zope.interface.verify import verifyObject
 from collective.cmisbrowser.errors import CMISConnectorError
 from collective.cmisbrowser.interfaces import ICMISConnector
 from collective.cmisbrowser.tests.base import CMISBrowserTestCase, TestSettings
+from collective.cmisbrowser.interfaces import ICMISFileResult
 
 from zExceptions import NotFound
 
@@ -135,8 +135,31 @@ class ConnectorTestCase(CMISBrowserTestCase):
             connector.get_object_parent,
             'lalala')
 
+    def test_get_object_parents(self):
+        """Test get_object_parents.
+        """
+        connector = queryAdapter(self.settings, ICMISConnector, self.method)
+        connector.start()
+
+        item = connector.get_object_by_path('/testfolder/soap/info/index.html')
+        parents = connector.get_object_parents(item['cmis:objectId'])
+        self.assertTrue(isinstance(parents, tuple))
+        self.assertEqual(len(parents), 2)
+        folders, name = parents
+        self.assertTrue(isinstance(folders, list))
+        self.assertEqual(len(folders), 3)
+        self.assertEqual(
+            map(itemgetter('cmis:name'), folders),
+            ['info', 'soap', 'testfolder'])
+        self.assertEqual(
+            map(itemgetter('cmis:objectTypeId'), folders),
+            ['cmis:folder', 'cmis:folder', 'cmisbrowser:root'])
+        self.assertEqual(
+            map(lambda c: c.get('cmis:objectId') is not None, folders),
+            [True, True, True])
+
     def test_get_object_children(self):
-        """Test get_object_children
+        """Test get_object_children.
         """
         connector = queryAdapter(self.settings, ICMISConnector, self.method)
         connector.start()
@@ -155,6 +178,19 @@ class ConnectorTestCase(CMISBrowserTestCase):
         self.assertEqual(
             map(lambda c: c.get('cmis:objectId') is not None, children),
             [True, True, True, True])
+
+    def test_get_object_content(self):
+        """Test get_object_content.
+        """
+        connector = queryAdapter(self.settings, ICMISConnector, self.method)
+        connector.start()
+        item = connector.get_object_by_path('/testfolder/hello.html')
+        content = connector.get_object_content(item['cmis:objectId'])
+
+        self.assertTrue(verifyObject(ICMISFileResult, content))
+        self.assertEqual(content.filename, 'hello.html')
+        self.assertEqual(content.mimetype, 'text/html')
+        self.assertEqual(content.length, 42)
 
 
 class RESTConnectorTestCase(ConnectorTestCase):
