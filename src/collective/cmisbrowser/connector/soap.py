@@ -12,7 +12,7 @@ from zExceptions import NotFound
 
 from plone.memoize import ram
 from zope.interface import implements
-from zope.cachedescriptors.property import CachedProperty
+from zope.cachedescriptors.property import Lazy
 
 from collective.cmisbrowser.cmis.result import CMISFileResult
 from collective.cmisbrowser.errors import CMISConnectorError
@@ -149,19 +149,19 @@ class SOAPClient(object):
             client.set_options(wsse=auth)
         return client.service
 
-    @CachedProperty
+    @Lazy
     def repository(self):
         return self._create_client('RepositoryService')
 
-    @CachedProperty
+    @Lazy
     def navigation(self):
         return self._create_client('NavigationService')
 
-    @CachedProperty
+    @Lazy
     def object(self):
         return self._create_client('ObjectService')
 
-    @CachedProperty
+    @Lazy
     def discovery(self):
         return self._create_client('DiscoveryService')
 
