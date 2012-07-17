@@ -5,6 +5,7 @@
 
 import logging
 import urllib
+import re
 
 from Acquisition import aq_inner
 from zExceptions import NotFound
@@ -17,6 +18,16 @@ from collective.cmisbrowser.interfaces import ICMISConnector
 from collective.cmisbrowser.interfaces import ICMISZopeAPI
 
 logger = logging.getLogger('collective.cmisbrowser')
+
+
+def quote(text):
+
+    def escape(x):
+        if x.group(0) == "'":
+            return "\\'"
+        return x.group(0)
+
+    return re.sub(r"""(\\.|.)""", escape, text)
 
 
 # This can be changed to a ZCML based registry for extensibility.
@@ -102,10 +113,9 @@ class CMISZopeAPI(object):
             contents=self.connector.get_object_children(container.CMISId()))
 
     def search(self, text):
-        escaped_text = "'%s'" % text.replace("'", "\'")
-        return self._build(
-            parent=None,
-            contents=self.connector.query_for_objects(
-                "SELECT R.*, SCORE() AS SEARCH_SCORE FROM cmis:document R "
-                "WHERE CONTAINS(%s) AND IN_TREE(R, '%s') ORDER BY SEARCH_SCORE DESC" % (
-                    escaped_text, self.root.CMISId())))
+        query = "SELECT R.*, SCORE() FROM cmis:document R " + \
+            "WHERE CONTAINS('%s') AND IN_TREE(R, '%s') ORDER BY SEARCH_SCORE DESC" % (
+            quote(text),
+            self.root.CMISId())
+        results = self.connector.query_for_objects(query)
+        return self._build(parent=None, contents=results)

@@ -10,7 +10,7 @@ from Acquisition import aq_parent
 
 from zope.interface.verify import verifyObject
 
-from collective.cmisbrowser.cmis.api import CMISZopeAPI
+from collective.cmisbrowser.cmis.api import CMISZopeAPI, quote
 from collective.cmisbrowser.interfaces import ICMISDocument, ICMISFolder, ICMISRootFolder
 from collective.cmisbrowser.interfaces import ICMISZopeAPI
 from collective.cmisbrowser.tests.base import CMISBrowserTestCase, TestSettings
@@ -111,6 +111,10 @@ class APITestCase(CMISBrowserTestCase):
         self.assertEqual(
             map(lambda c: c.Format(), contents),
             ['text/html', 'text/plain'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), contents),
+            ['http://nohost/plone/browser/soap/info',
+             'http://nohost/plone/browser/soap/specs.txt'])
 
     def test_traverse_notfound(self):
         """Test traverse to an item that doesn't exists.
@@ -175,13 +179,59 @@ class APITestCase(CMISBrowserTestCase):
         self.assertEqual(
             map(lambda c: c.Format(), contents),
             ['text/html'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), contents),
+            ['http://nohost/plone/browser/soap/info/index.html'])
 
-    # def test_search(self):
-    #     """Test search feature.
-    #     """
-    #     results = self.api.search('soap')
-    #     self.assertTrue(isinstance(results, list))
-    #     self.assertEqual(len(results), 3)
+    def test_search(self):
+        """Test search feature.
+        """
+        results = self.api.search('soap')
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 3)
+        self.assertEqual(
+            map(lambda c: c.getId(), results),
+            ['documentation.txt', 'specs.txt', 'index.html'])
+        self.assertEqual(
+            map(lambda c: c.Type(), results),
+            ['CMIS Document', 'CMIS Document', 'CMIS Document'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), results),
+            ['http://nohost/plone/browser/documentation.txt',
+             'http://nohost/plone/browser/soap/specs.txt',
+             'http://nohost/plone/browser/soap/info/index.html'])
+
+    def test_search_escape(self):
+        """Test search feature with an entry that have an '.
+        """
+        results = self.api.search(r"specification's")
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 2)
+        self.assertEqual(
+            map(lambda c: c.getId(), results),
+            ['specs.txt', 'specs.txt'])
+        self.assertEqual(
+            map(lambda c: c.Type(), results),
+            ['CMIS Document', 'CMIS Document'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), results),
+            ['http://nohost/plone/browser/soap/specs.txt',
+             'http://nohost/plone/browser/rest/specs.txt'])
+
+    def test_search_escape_hacker(self):
+        """Test search feature with an entry that have an \'.
+        """
+        results = self.api.search(r"specification\'s")
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 0)
+
+    def test_search_hacker(self):
+        """Test search feature while trying to inject something in the
+        query.
+        """
+        results = self.api.search(r"documentation') AND CONTAINS('soap")
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 0)
 
 
 class RESTAPITestCase(APITestCase):
@@ -192,8 +242,26 @@ class SOAPAPITestCase(APITestCase):
     method = 'soap'
 
 
+class QuoteTestCase(unittest.TestCase):
+
+    def test_escape(self):
+        self.assertEqual(
+            quote(r"This is some text"), r"This is some text")
+        self.assertEqual(
+            quote(r"This is 'some text"), r"This is \'some text")
+        self.assertEqual(
+            quote(r"This is \'some text"), r"This is \'some text")
+        self.assertEqual(
+            quote(r"\'This is some text'"), r"\'This is some text\'")
+        self.assertEqual(
+            quote(r"'This is some text'"), r"\'This is some text\'")
+        self.assertEqual(
+            quote(r"This is \\'some text"), r"This is \\\'some text")
+
+
 def test_suite():
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(QuoteTestCase))
     suite.addTest(unittest.makeSuite(RESTAPITestCase))
     suite.addTest(unittest.makeSuite(SOAPAPITestCase))
     return suite

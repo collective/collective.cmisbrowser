@@ -191,6 +191,20 @@ class ConnectorTestCase(CMISBrowserTestCase):
         self.assertEqual(content.mimetype, 'text/html')
         self.assertEqual(content.length, 42)
 
+    def test_query_for_objects(self):
+        """Test query_for_objects.
+        """
+        connector = queryAdapter(self.settings, ICMISConnector, self.method)
+        root = connector.start()
+
+        contents = connector.query_for_objects(
+            "SELECT R.* FROM cmis:document R WHERE IN_TREE('%s')" % root['cmis:objectId'])
+        self.assertTrue(isinstance(contents, list))
+        self.assertEqual(len(contents), 5)
+        self.assertEqual(
+            sorted(map(itemgetter('cmis:name'), contents)),
+            ['documentation.txt', 'hello.html', 'index.html', 'specs.txt', 'specs.txt'])
+
 
 class RESTConnectorTestCase(ConnectorTestCase):
     method = 'rest'

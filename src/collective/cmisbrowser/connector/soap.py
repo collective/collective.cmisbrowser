@@ -33,32 +33,37 @@ class SOAPConnectorError(CMISConnectorError):
 
 # Usefull decorators
 
-def soap_error(wrapped):
+def soap_error(object_lookup=False):
 
-    def wrapper(self, *args, **kwargs):
-        try:
-            return wrapped(self, *args, **kwargs)
-        except urllib2.URLError, error:
-            if isinstance(error.args[0], tuple):
+    def error_matcher(wrapped):
+
+        def wrapper(self, *args, **kwargs):
+            try:
+                return wrapped(self, *args, **kwargs)
+            except urllib2.URLError, error:
+                if isinstance(error.args[0], tuple):
+                    raise SOAPConnectorError(
+                        u'Network transport error: %s' % str(error.args[0][1]))
                 raise SOAPConnectorError(
-                    u'Network transport error: %s' % str(error.args[0][1]))
-            raise SOAPConnectorError(
-                u'Network error: %s' % str(error.args[0]))
-        except suds.transport.TransportError, error:
-            raise SOAPConnectorError(
-                u'HTTP transport error, code %d' % error.httpcode,
-                indent_xml(error.fp.read()))
-        except suds.WebFault, error:
-            cmis_error = getattr(getattr(error.fault, 'detail', None), 'cmisFault', None)
-            if cmis_error is not None:
-                # In case of object not found, we convert to a Zope error
-                if cmis_error.type in self.object_not_found_exception:
-                    raise NotFound()
-            raise SOAPConnectorError(
-                error.fault.faultstring,
-                error.document.str())
+                    u'Network error: %s' % str(error.args[0]))
+            except suds.transport.TransportError, error:
+                raise SOAPConnectorError(
+                    u'HTTP transport error, code %d' % error.httpcode,
+                    indent_xml(error.fp.read()))
+            except suds.WebFault, error:
+                cmis_error = getattr(getattr(error.fault, 'detail', None), 'cmisFault', None)
+                if object_lookup and cmis_error is not None:
+                    # In case of object not found, we convert to a Zope error
+                    if (cmis_error.type == 'objectNotFound' or
+                        (not self.have_object_not_found_exception and cmis_error.type == 'invalidArgument')):
+                        raise NotFound()
+                raise SOAPConnectorError(
+                    error.fault.faultstring,
+                    error.document.str())
 
-    return wrapper
+        return wrapper
+
+    return error_matcher
 
 def soap_cache(wrapped):
 
@@ -165,14 +170,14 @@ class SOAPConnector(object):
     implements(ICMISConnector)
 
     def __init__(self, settings):
-        self.object_not_found_exception = ['objectNotFound']
+        self.have_object_not_found_exception = True
         self._settings = settings
         self._client = SOAPClient(settings)
         self._repository_id = None
         self._repository_info = None
         self._root = None
 
-    @soap_error
+    @soap_error(object_lookup=True)
     @soap_cache
     def get_object_by_path(self, path, root=False):
         return properties_to_dict(
@@ -182,7 +187,7 @@ class SOAPConnector(object):
                 filter='*'),
             root=root)
 
-    @soap_error
+    @soap_error()
     @soap_cache
     def get_object_by_cmis_id(self, cmis_id, root=False):
         return properties_to_dict(
@@ -192,7 +197,7 @@ class SOAPConnector(object):
                 filter='*'),
             root=root)
 
-    @soap_error
+    @soap_error()
     @soap_cache
     def get_object_children(self, cmis_id):
         convert = lambda c: properties_to_dict(
@@ -205,7 +210,7 @@ class SOAPConnector(object):
                 filter='*',
                 includePathSegment=True))
 
-    @soap_error
+    @soap_error()
     @soap_cache
     def get_object_parent(self, cmis_id):
         root_id = self._root['cmis:objectId']
@@ -233,7 +238,7 @@ class SOAPConnector(object):
             current = parent
         return parents, identifier
 
-    @soap_error
+    @soap_error()
     def query_for_objects(self, query, start=None, count=None):
         result = self._client.discovery.query(
             repositoryId=self._repository_id,
@@ -245,7 +250,7 @@ class SOAPConnector(object):
                 result.objects)
         return []
 
-    @soap_error
+    @soap_error()
     def get_object_content(self, cmis_id):
 
         def read_stream(stream):
@@ -263,7 +268,7 @@ class SOAPConnector(object):
             mimetype=content.mimeType,
             data=read_stream(content.stream))
 
-    @soap_error
+    @soap_error()
     def start(self):
         if self._repository_id is not None:
             return self._root
@@ -303,10 +308,10 @@ class SOAPConnector(object):
         info = self.get_repository_info()
         if (info.productName.startswith('Alfresco') and
             info.productVersion[0] < '4'):
-            self.object_not_found_exception.append('invalidArgument')
+            self.have_object_not_found_exception = False
         return self._root
 
-    @soap_error
+    @soap_error()
     def get_repository_info(self):
         if self._repository_info is None:
             self._repository_info = self._client.repository.getRepositoryInfo(

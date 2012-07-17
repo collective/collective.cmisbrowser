@@ -4,6 +4,7 @@
 # $Id$
 
 import os
+import time
 
 try:
     from Zope2.App.zcml import load_config
@@ -34,13 +35,13 @@ class TestSettings(object):
         # Private URL used to create test content
         self._repository_url = os.environ.get(
             'CMIS_REPOSITORY_URL_REST',
-            'http://localhost/alfresco/s/cmis')
+            'http://localhost:8080/alfresco/s/cmis')
         if method == 'rest':
             self.repository_url = self._repository_url
         else:
             self.repository_url = os.environ.get(
                 'CMIS_REPOSITORY_URL_SOAP',
-                'http://localhost/alfresco/cmis')
+                'http://localhost:8080/alfresco/cmis')
         self.repository_connector = method
         self.repository_name = u''
         self.repository_path = unicode(os.environ.get(
@@ -115,7 +116,7 @@ class TestSettings(object):
         soap_folder = folder.createFolder('soap')
         soap_folder.createDocumentFromString(
             'specs.txt',
-            contentString='Specification SOAP',
+            contentString='Specification\'s SOAP',
             contentType='text/plain')
         info_folder = soap_folder.createFolder('info')
         info_folder.createDocumentFromString(
@@ -125,12 +126,15 @@ class TestSettings(object):
         rest_folder = folder.createFolder('rest')
         rest_folder.createDocumentFromString(
             'specs.txt',
-            contentString='Specification REST',
+            contentString='Specification\'s REST',
             contentType='text/plain')
 
         # We are now going to browse the testfolder
         self.repository_path = '/testfolder'
         os.environ['CMIS_REPOSITORY_PATH'] = '/testfolder'
+        # Make sure the CMIS server have time to reindex it
+        # content. This sucks, but we have no other way at the moment.
+        time.sleep(60)
 
 
 @onsetup
