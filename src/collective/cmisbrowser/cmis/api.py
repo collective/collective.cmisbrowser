@@ -112,10 +112,21 @@ class CMISZopeAPI(object):
             parent=container,
             contents=self.connector.get_object_children(container.CMISId()))
 
-    def search(self, text):
-        query = "SELECT R.*, SCORE() FROM cmis:document R " + \
-            "WHERE CONTAINS('%s') AND IN_TREE(R, '%s') ORDER BY SEARCH_SCORE DESC" % (
-            quote(text),
-            self.root.CMISId())
+    def search(self, text, quotable=False, scorable=True):
+        if quotable:
+            text = quote(text)
+        elif "'" in text:
+            # By default you can't quote quotes in CMIS. Only Alfresco support it.
+            return []
+        if scorable:
+            query = "SELECT R.*, SCORE() as TEXT_SCORE FROM cmis:document R " + \
+                "WHERE CONTAINS('%s') AND IN_TREE(R, '%s') ORDER BY TEXT_SCORE DESC" % (
+                text,
+                self.root.CMISId())
+        else:
+            query = "SELECT R.*  FROM cmis:document R " + \
+                "WHERE CONTAINS('%s') AND IN_TREE(R, '%s')" % (
+                text,
+                self.root.CMISId())
         results = self.connector.query_for_objects(query)
         return self._build(parent=None, contents=results)

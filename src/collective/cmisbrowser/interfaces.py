@@ -171,7 +171,7 @@ class ICMISZopeAPI(Interface):
         given container one.
         """
 
-    def search(text):
+    def search(text, quotable=False, scorable=True):
         """Search all CMIS content that contains the given text.
         """
 

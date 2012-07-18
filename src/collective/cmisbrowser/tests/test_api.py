@@ -183,28 +183,50 @@ class APITestCase(CMISBrowserTestCase):
             map(lambda c: c.absolute_url(), contents),
             ['http://nohost/plone/browser/soap/info/index.html'])
 
-    def test_search(self):
-        """Test search feature.
+    def test_search_score_support(self):
+        """Test search feature, with score feature on, quoting off.
+        NOT EVERY CMIS REPOSITORY SUPPORTS IT.
         """
         results = self.api.search('soap')
+        results = sorted(results, key=lambda c: c.getId())
         self.assertTrue(isinstance(results, list))
         self.assertEqual(len(results), 3)
         self.assertEqual(
             map(lambda c: c.getId(), results),
-            ['documentation.txt', 'specs.txt', 'index.html'])
+            ['documentation.txt', 'index.html', 'specs.txt', ])
         self.assertEqual(
             map(lambda c: c.Type(), results),
             ['CMIS Document', 'CMIS Document', 'CMIS Document'])
         self.assertEqual(
             map(lambda c: c.absolute_url(), results),
             ['http://nohost/plone/browser/documentation.txt',
-             'http://nohost/plone/browser/soap/specs.txt',
-             'http://nohost/plone/browser/soap/info/index.html'])
+             'http://nohost/plone/browser/soap/info/index.html',
+             'http://nohost/plone/browser/soap/specs.txt'])
 
-    def test_search_escape(self):
-        """Test search feature with an entry that have an '.
+    def test_search_no_score_support(self):
+        """Test search feature with score feature off.
         """
-        results = self.api.search(r"specification's")
+        results = self.api.search('soap', scorable=False)
+        results = sorted(results, key=lambda c: c.getId())
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 3)
+        self.assertEqual(
+            map(lambda c: c.getId(), results),
+            ['documentation.txt', 'index.html', 'specs.txt', ])
+        self.assertEqual(
+            map(lambda c: c.Type(), results),
+            ['CMIS Document', 'CMIS Document', 'CMIS Document'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), results),
+            ['http://nohost/plone/browser/documentation.txt',
+             'http://nohost/plone/browser/soap/info/index.html',
+             'http://nohost/plone/browser/soap/specs.txt'])
+
+    def test_search_escape_quotable_support(self):
+        """Test search feature with an entry that have an ', and
+        quoting. NOT ALL CMIS REPOSITORY SUPPORTS IT.
+        """
+        results = self.api.search(r"specification's", quotable=True)
         self.assertTrue(isinstance(results, list))
         self.assertEqual(len(results), 2)
         self.assertEqual(
@@ -218,20 +240,40 @@ class APITestCase(CMISBrowserTestCase):
             ['http://nohost/plone/browser/soap/specs.txt',
              'http://nohost/plone/browser/rest/specs.txt'])
 
-    def test_search_escape_hacker(self):
-        """Test search feature with an entry that have an \'.
+    def test_search_escape_hacker_quotable_support(self):
+        """Test search feature with an entry that have an \', quoting
+        on.
+        """
+        results = self.api.search(r"specification\'s", quotable=True)
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 2)
+        self.assertEqual(
+            map(lambda c: c.getId(), results),
+            ['specs.txt', 'specs.txt'])
+        self.assertEqual(
+            map(lambda c: c.Type(), results),
+            ['CMIS Document', 'CMIS Document'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), results),
+            ['http://nohost/plone/browser/soap/specs.txt',
+             'http://nohost/plone/browser/rest/specs.txt'])
+
+    def test_search_escape_no_quotable_support(self):
+        """Test search feature with an entry that have an ', and
+        quoting. NOT ALL CMIS REPOSITORY SUPPORTS IT.
+        """
+        results = self.api.search(r"specification's")
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 0)
+
+    def test_search_escape_hacker_no_quotable_support(self):
+        """Test search feature with an entry that have an \', quoting
+        on.
         """
         results = self.api.search(r"specification\'s")
         self.assertTrue(isinstance(results, list))
         self.assertEqual(len(results), 0)
 
-    def test_search_hacker(self):
-        """Test search feature while trying to inject something in the
-        query.
-        """
-        results = self.api.search(r"documentation') AND CONTAINS('soap")
-        self.assertTrue(isinstance(results, list))
-        self.assertEqual(len(results), 0)
 
 
 class RESTAPITestCase(APITestCase):
