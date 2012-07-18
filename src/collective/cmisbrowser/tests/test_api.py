@@ -77,7 +77,7 @@ class APITestCase(CMISBrowserTestCase):
             content.Identifier(),
             'http://nohost/plone/browser/documentation.txt')
         self.assertEqual(content.Type(), 'CMIS Document')
-        self.assertEqual(content.Format(), 'text/plain')
+        self.assertEqual(content.Format(), 'text/plain; charset=UTF-8')
 
     def test_traverse_folder(self):
         """Test traverse directly to a folder.
@@ -221,6 +221,38 @@ class APITestCase(CMISBrowserTestCase):
             ['http://nohost/plone/browser/documentation.txt',
              'http://nohost/plone/browser/soap/info/index.html',
              'http://nohost/plone/browser/soap/specs.txt'])
+
+    def test_search_unicode_quotable_support(self):
+        """Test search feature with an unicode entry.
+        """
+        results = self.api.search(u"Étonnant", quotable=True)
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            map(lambda c: c.getId(), results),
+            ['documentation.txt'])
+        self.assertEqual(
+            map(lambda c: c.Type(), results),
+            ['CMIS Document'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), results),
+            ['http://nohost/plone/browser/documentation.txt'])
+
+    def test_search_unicode_support(self):
+        """Test search feature with an unicode entry.
+        """
+        results = self.api.search(u"Étonnant")
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            map(lambda c: c.getId(), results),
+            ['documentation.txt'])
+        self.assertEqual(
+            map(lambda c: c.Type(), results),
+            ['CMIS Document'])
+        self.assertEqual(
+            map(lambda c: c.absolute_url(), results),
+            ['http://nohost/plone/browser/documentation.txt'])
 
     def test_search_escape_quotable_support(self):
         """Test search feature with an entry that have an ', and

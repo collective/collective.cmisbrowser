@@ -119,13 +119,13 @@ class CMISZopeAPI(object):
             # By default you can't quote quotes in CMIS. Only Alfresco support it.
             return []
         if scorable:
-            query = "SELECT R.*, SCORE() as TEXT_SCORE FROM cmis:document R " + \
-                "WHERE CONTAINS('%s') AND IN_TREE(R, '%s') ORDER BY TEXT_SCORE DESC" % (
+            query = u"SELECT R.*, SCORE() as TEXT_SCORE FROM cmis:document R " + \
+                u"WHERE CONTAINS('%s') AND IN_TREE(R, '%s') ORDER BY TEXT_SCORE DESC" % (
                 text,
                 self.root.CMISId())
         else:
-            query = "SELECT R.*  FROM cmis:document R " + \
-                "WHERE CONTAINS('%s') AND IN_TREE(R, '%s')" % (
+            query = u"SELECT R.*  FROM cmis:document R " + \
+                u"WHERE CONTAINS('%s') AND IN_TREE(R, '%s')" % (
                 text,
                 self.root.CMISId())
         results = self.connector.query_for_objects(query)

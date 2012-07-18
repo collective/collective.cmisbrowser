@@ -111,8 +111,8 @@ class TestSettings(object):
             contentType='text/html')
         folder.createDocumentFromString(
             'documentation.txt',
-            contentString='Contains Documentation about SOAP',
-            contentType='text/plain')
+            contentString='Contains Documentation about SOAP\nÉtonnant ?',
+            contentType='text/plain; charset=UTF-8')
         soap_folder = folder.createFolder('soap')
         soap_folder.createDocumentFromString(
             'specs.txt',
