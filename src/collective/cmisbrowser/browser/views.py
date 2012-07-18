@@ -9,7 +9,6 @@ import urllib
 from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 from collective.cmisbrowser.cmis.api import CMISZopeAPI
-from collective.cmisbrowser.interfaces import ICMISBrowser
 from zope.datetime import rfc1123_date
 
 CHUNK_SIZE = 1<<16              # 64K

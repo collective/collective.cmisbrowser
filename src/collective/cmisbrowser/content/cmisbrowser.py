@@ -6,6 +6,7 @@
 import logging
 import uuid
 
+from Acquisition import aq_inner
 from AccessControl import ClassSecurityInfo
 from Products.CMFDefault.permissions import View
 from ZPublisher.BaseRequest import DefaultPublishTraverse
@@ -86,6 +87,9 @@ class CMISBrowser(Container):
         if self._uid is None:
             self._uid = str(uuid.uuid1())
         return self._uid
+
+    def getCMISBrowser(self):
+        return aq_inner(self)
 
     def browserDefault(self, request):
         return CMISTraverser(self).browserDefault(request)
