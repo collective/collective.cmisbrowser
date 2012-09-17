@@ -11,100 +11,101 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"Language-Code: en\n"
-"Language-Name: English\n"
+"Language-Code: nl\n"
+"Language-Name: Dutch\n"
 "Preferred-Encodings: utf-8 latin1\n"
+"X-is-fallback-for: nl-be nl-nl\n"
 "Domain: collective.cmisbrowser\n"
 
 #: ./profiles/default/types/CMIS_Browser.xml
 msgid "A CMIS content browser"
-msgstr ""
+msgstr "Een CMIS inhoud browser"
 
 #: ./profiles/default/types/CMIS_Document.xml
 msgid "A CMIS content document"
-msgstr ""
+msgstr "Een CMIS inhoud document"
 
 #: ./profiles/default/types/CMIS_Folder.xml
 msgid "A CMIS content folder"
-msgstr ""
+msgstr "Een CMIS inhoud map"
 
 #: ./browser/forms.py:19
 msgid "Add a CMIS Browser"
-msgstr ""
+msgstr "Een CMIS browser toevoegen"
 
 #: ./browser/templates/cmisbrowserview.pt:11
 msgid "An error happened while connecting to the CMIS Repository."
-msgstr ""
+msgstr "Een fout trad op bij het verbinden met de CMIS Repository."
 
 #: ./profiles/default/types/CMIS_Browser.xml
 msgid "CMIS Browser"
-msgstr ""
+msgstr "CMIS Browser"
 
 #: ./profiles/default/types/CMIS_Document.xml
 msgid "CMIS Document"
-msgstr ""
+msgstr "CMIS Document"
 
 #: ./profiles/default/types/CMIS_Folder.xml
 msgid "CMIS Folder"
-msgstr ""
+msgstr "CMIS map"
 
 #: ./browser/settings.py:22
 msgid "CMIS default settings"
-msgstr ""
+msgstr "CMIS standaard instellingen"
 
 #: ./interfaces.py:47
 msgid "CMIS repository URI"
-msgstr ""
+msgstr "CMIS Repository URI"
 
 #: ./interfaces.py:49
 msgid "CMIS repository name"
-msgstr ""
+msgstr "CMIS Repository naam"
 
 #: ./interfaces.py:52
 msgid "CMIS start folder path"
-msgstr ""
+msgstr "CMIS startmap pad"
 
 #: ./content/cmisbrowser.py:99
 msgid "Create CMIS Browser"
-msgstr ""
+msgstr "Maak CMIS Browser"
 
 #: ./browser/settings.py:21
 msgid "Default settings used by every CMIS Browser in the site."
-msgstr ""
+msgstr "Standaard instellingen gebruikt door elke CMIS Browser in de site."
 
 #: ./browser/forms.py:37
 msgid "Edit CMIS Browser"
-msgstr ""
+msgstr "Bewerk CMIS Browser"
 
 #: ./interfaces.py:53
 msgid "Folder in the CMIS repository at which the browser should start."
-msgstr ""
+msgstr "Map in de CMIS Repository vanaf waar de browser dient te starten (startmap)."
 
 #: ./interfaces.py:68
 msgid "HTTP-Proxy to use to access CMIS repository"
-msgstr ""
+msgstr "HTTP-Proxy voor toegang tot de CMIS Repository"
 
 #: ./interfaces.py:59
 msgid "Password to access CMIS repository"
-msgstr ""
+msgstr "Wachtwoord voor toegang tot de CMIS Repository"
 
 #: ./browser/templates/cmisbrowserview.pt:14
 msgid "Please check the settings, and the CMIS server status."
-msgstr ""
+msgstr "Gelieve de instellingen en CMIS server status te controleren."
 
 #: ./interfaces.py:62
 msgid "Plone template used to render folders"
-msgstr ""
+msgstr "Plone template die gebruikt wordt om mappen weer te geven"
 
 #: ./interfaces.py:63
 msgid "Select a default plone template to render folders."
-msgstr ""
+msgstr "Selecteer een standaard Plone template om mappen weer te geven."
 
 #: ./browser/settings.py:20
 msgid "Site wide default settings for CMIS connections"
-msgstr ""
+msgstr "Standaard CMIS connectie instellingen voor de hele site"
 
 #: ./interfaces.py:56
 msgid "User to access CMIS repository"
-msgstr ""
+msgstr "Gebruiker voor toegang tot de CMIS Repository"
 
