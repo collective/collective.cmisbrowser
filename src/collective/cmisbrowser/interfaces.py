@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2011 Infrae. All rights reserved.
+# Copyright (c) 2012 Infrae. All rights reserved.
 # See also LICENSE.txt
 # $Id$
 
@@ -37,7 +37,6 @@ connector_source = SimpleVocabulary([
         SimpleTerm(
             value='rest',
             title=_('Connection REST'))])
-
 
 
 class ICMISSettings(Interface):

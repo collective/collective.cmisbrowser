@@ -57,7 +57,7 @@ msgstr "CMIS map"
 
 #: ./interfaces.py:65
 msgid "CMIS connection type to the repository"
-msgstr ""
+msgstr "CMIS connectie type naar de repository"
 
 #: ./browser/settings.py:22
 msgid "CMIS default settings"
@@ -77,11 +77,11 @@ msgstr "CMIS startmap pad"
 
 #: ./interfaces.py:39
 msgid "Connection REST"
-msgstr ""
+msgstr "REST connectie"
 
 #: ./interfaces.py:36
 msgid "Connection SOAP"
-msgstr ""
+msgstr "SOAP connectie"
 
 #: ./content/cmisbrowser.py:129
 msgid "Create CMIS Browser"
@@ -97,11 +97,11 @@ msgstr "Bewerk CMIS Browser"
 
 #: ./interfaces.py:101
 msgid "Enable RSS feed"
-msgstr ""
+msgstr "RSS feed activeren"
 
 #: ./interfaces.py:55
 msgid "Folder in the CMIS repository at which the browser should start, will start at the root of the repository if this is empty."
-msgstr ""
+msgstr "Map in the CMIS repository vanaf waar de browser dient te starten, indien niet ingevuld wordt gestart vanaf de root van de repository."
 
 #: ./interfaces.py:82
 msgid "HTTP-Proxy to use to access CMIS repository"
@@ -109,7 +109,7 @@ msgstr "HTTP-Proxy voor toegang tot de CMIS Repository"
 
 #: ./interfaces.py:102
 msgid "If this is checked, an RSS feed will be available on every CMIS folder."
-msgstr ""
+msgstr "Indien aangevinkt zal er een RSS feed beschikbaar zijn voor elke CMIS map."
 
 #: ./interfaces.py:50
 msgid "If you have a federated CMIS repository, you have to type you have to type the name of the repository you want to access."
@@ -117,7 +117,7 @@ msgstr ""
 
 #: ./interfaces.py:90
 msgid "Password specified, but username missing."
-msgstr ""
+msgstr "Wachtwoord ingevuld, gebruikersnaam ontbreekt."
 
 #: ./interfaces.py:62
 msgid "Password to access CMIS repository"
@@ -133,27 +133,27 @@ msgstr "Plone template die gebruikt wordt om mappen weer te geven"
 
 #: ./browser/templates/cmisbrowserinfoview.pt:39
 msgid "Product Name"
-msgstr ""
+msgstr "Product Naam"
 
 #: ./browser/templates/cmisbrowserinfoview.pt:45
 msgid "Product Version"
-msgstr ""
+msgstr "Product Versie"
 
 #: ./browser/templates/cmisbrowserinfoview.pt:16
 msgid "Repository URL"
-msgstr ""
+msgstr "Repository URL"
 
 #: ./browser/templates/cmisbrowserinfoview.pt:27
 msgid "Repository description"
-msgstr ""
+msgstr "Repository beschrijving"
 
 #: ./browser/templates/cmisbrowserinfoview.pt:14
 msgid "Repository information"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ./browser/templates/cmisbrowserinfoview.pt:21
 msgid "Repository name"
-msgstr ""
+msgstr "Repository naam"
 
 #: ./interfaces.py:77
 msgid "Select a default plone template to render folders."
@@ -161,7 +161,7 @@ msgstr "Selecteer een standaard Plone template om mappen weer te geven."
 
 #: ./interfaces.py:66
 msgid "Select if you want to connect to the CMIS repository using SOAP or REST."
-msgstr ""
+msgstr "Selecteer welke connectie je wil gebruiken, SOAP of REST."
 
 #: ./browser/settings.py:20
 msgid "Site wide default settings for CMIS connections"
@@ -169,7 +169,7 @@ msgstr "Standaard CMIS connectie instellingen voor de hele site"
 
 #: ./interfaces.py:71
 msgid "Time in minutes CMIS information should be cached"
-msgstr ""
+msgstr "Tijd in minuten hoelang CMIS informatie gecachet dient te worden"
 
 #: ./interfaces.py:59
 msgid "User to access CMIS repository"
@@ -177,9 +177,9 @@ msgstr "Gebruiker voor toegang tot de CMIS Repository"
 
 #: ./interfaces.py:88
 msgid "Username specified, but password missing."
-msgstr ""
+msgstr "Gebruikersnaam ingevuld, wachtwoord ontbreekt."
 
 #: ./browser/templates/cmisbrowserinfoview.pt:33
 msgid "Vendor Name"
-msgstr ""
+msgstr "Fabrikant Naam"
 
