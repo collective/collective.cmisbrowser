@@ -47,7 +47,7 @@ class ICMISSettings(Interface):
     repository_name = schema.TextLine(
         title=_(u'CMIS repository name'),
         description=_(u'If you have a federated CMIS repository, you have to type '
-                      u'you have to type the name of the repository you want to access.'),
+                      u'the name of the repository you want to access.'),
         required=False)
     repository_path = schema.TextLine(
         title=_(u'CMIS start folder path'),
