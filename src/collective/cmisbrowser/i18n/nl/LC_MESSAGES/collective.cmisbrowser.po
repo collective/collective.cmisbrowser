@@ -112,7 +112,7 @@ msgid "If this is checked, an RSS feed will be available on every CMIS folder."
 msgstr "Indien aangevinkt zal er een RSS feed beschikbaar zijn voor elke CMIS map."
 
 #: ./interfaces.py:50
-msgid "If you have a federated CMIS repository, you have to type you have to type the name of the repository you want to access."
+msgid "If you have a federated CMIS repository, you have to type the name of the repository you want to access."
 msgstr ""
 
 #: ./interfaces.py:90
