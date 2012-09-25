@@ -57,7 +57,7 @@ msgstr "CMIS map"
 
 #: ./interfaces.py:65
 msgid "CMIS connection type to the repository"
-msgstr "CMIS connectie type naar de repository"
+msgstr "CMIS connectie type naar de Repository"
 
 #: ./browser/settings.py:22
 msgid "CMIS default settings"
@@ -101,7 +101,7 @@ msgstr "RSS feed activeren"
 
 #: ./interfaces.py:55
 msgid "Folder in the CMIS repository at which the browser should start, will start at the root of the repository if this is empty."
-msgstr "Map in the CMIS repository vanaf waar de browser dient te starten, indien niet ingevuld wordt gestart vanaf de root van de repository."
+msgstr "Map in the CMIS Repository vanaf waar de browser dient te starten, indien niet ingevuld wordt gestart vanaf de root van de Repository."
 
 #: ./interfaces.py:82
 msgid "HTTP-Proxy to use to access CMIS repository"
@@ -113,7 +113,7 @@ msgstr "Indien aangevinkt zal er een RSS feed beschikbaar zijn voor elke CMIS ma
 
 #: ./interfaces.py:50
 msgid "If you have a federated CMIS repository, you have to type the name of the repository you want to access."
-msgstr "Indien je een Fedrarated CMIS repository gebruikt (één omgeving met verschilende repositories), dien je de naam van de repository in te vullen waartoe je toegang wil."
+msgstr "Indien je een Fedrarated CMIS Repository gebruikt (één omgeving met verschilende Repositories), dien je de naam van de Repository in te vullen waartoe je toegang wil."
 
 #: ./interfaces.py:90
 msgid "Password specified, but username missing."
@@ -161,7 +161,7 @@ msgstr "Selecteer een standaard Plone template om mappen weer te geven."
 
 #: ./interfaces.py:66
 msgid "Select if you want to connect to the CMIS repository using SOAP or REST."
-msgstr "Selecteer welke connectie je wil gebruiken, SOAP of REST."
+msgstr "Selecteer welke connectie je wil gebruiken, SOAP of REST om een verbinding te maken met de Repository."
 
 #: ./browser/settings.py:20
 msgid "Site wide default settings for CMIS connections"
