@@ -1,3 +1,6 @@
+# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
+# See also LICENSE.txt
+
 import os, sys
 from setuptools import setup, find_packages
 
