@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2011 Infrae. All rights reserved.
+# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
 # See also LICENSE.txt
-# $Id$
 
 from plone.app.content.interfaces import INameFromTitle
 from plone.app.form.base import AddForm, EditForm

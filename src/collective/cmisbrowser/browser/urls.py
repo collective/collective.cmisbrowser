@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2011 Infrae. All rights reserved.
+# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
 # See also LICENSE.txt
-# $Id$
 
 from Acquisition import aq_inner, aq_parent
 from Products.Five.browser import BrowserView

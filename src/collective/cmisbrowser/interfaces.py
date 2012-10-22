@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2012 Infrae. All rights reserved.
+# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
 # See also LICENSE.txt
-# $Id$
 
 from Products.CMFPlone.interfaces.constrains import IConstrainTypes
 from Products.CMFPlone.interfaces import INonStructuralFolder

@@ -1,3 +1,6 @@
+# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
+# See also LICENSE.txt
+
 # See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
 try:
     __import__('pkg_resources').declare_namespace(__name__)

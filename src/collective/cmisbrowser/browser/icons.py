@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2011 Infrae. All rights reserved.
+# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
 # See also LICENSE.txt
-# $Id$
+
 from Products.CMFCore.utils import getToolByName
 
 from plone.app.layout.icons.icons import BaseIcon
