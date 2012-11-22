@@ -18,10 +18,16 @@ from collective.cmisbrowser.interfaces import ICMISConnector
 
 
 def indent_xml(xml):
-    # This is used for debug.
-    stdout, stderr = subprocess.Popen(
-        'xmlindent', stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate(
-        input=xml)
+    try:
+        # This is used for debug.
+        stdout, stderr = subprocess.Popen(
+            'xmlindent',
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE).communicate(
+            input=xml)
+    except OSError:
+        # We don't have xmlindent, don't indent the xml.
+        return xml
     return stdout
 
 
