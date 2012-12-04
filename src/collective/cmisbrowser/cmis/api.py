@@ -110,6 +110,10 @@ class CMISZopeAPI(object):
             parent=container,
             contents=self.connector.get_object_children(container.CMISId()))
 
+    def query(self, query):
+        results = self.connector.query_for_objects(query)
+        return self._build(parent=None, contents=results)
+
     def search(self, text, quotable=False, scorable=True):
         if quotable:
             text = quote(text)
@@ -126,5 +130,4 @@ class CMISZopeAPI(object):
                 u"WHERE CONTAINS('%s') AND IN_TREE(R, '%s')" % (
                 text,
                 self.root.CMISId())
-        results = self.connector.query_for_objects(query)
-        return self._build(parent=None, contents=results)
+        return self.query(query)
