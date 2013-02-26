@@ -36,7 +36,7 @@ class CMISBrowserAddForm(AddForm):
 
 class CMISBrowserEditForm(EditForm):
     label = _(u'Edit CMIS Browser')
-    form_fields = Fields(ICMISSettings, IRSSSetting)
+    form_fields = Fields(INameFromTitle, ICMISSettings, IRSSSetting)
 
 
 # The default title adapter is used by the add form

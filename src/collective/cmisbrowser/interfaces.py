@@ -69,6 +69,11 @@ class ICMISSettings(Interface):
         min=0,
         default=5,
         required=True)
+    title_from_plone = schema.Bool(
+        title=_(u"Browser title comes Plone instead of CMIS repository"),
+        description=_(u'Tell if the title of the browser should be the one set in Plone or of the root folder targeted in the CMIS repository.'),
+        default=True,
+        required=False)
     folder_view = schema.Choice(
         title=_(u'Plone template used to render folders'),
         description=_(u'Select a default plone template to render folders.'),

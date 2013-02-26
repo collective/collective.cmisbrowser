@@ -319,6 +319,12 @@ InitializeClass(CMISFolder)
 class CMISRootFolder(CMISFolder):
     implements(ICMISRootFolder)
 
+    def Title(self):
+        browser = self.getCMISBrowser()
+        if browser.title_from_plone:
+            return browser.Title()
+        return super(CMISRootFolder, self).Title()
+
     def getId(self):
         # The root must have an id of None (as they are the root of the URL).
         return None

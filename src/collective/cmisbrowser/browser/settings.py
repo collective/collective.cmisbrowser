@@ -51,6 +51,15 @@ class ConfigInteger(ConfigString):
             return self._default.get(prop.name)
 
 
+class ConfigBoolean(ConfigString):
+
+    def getter(prop, self):
+        try:
+            return bool(super(ConfigBoolean, prop).getter(self))
+        except (TypeError, ValueError):
+            return self._default.get(prop.name)
+
+
 class CMISSettingsAdapter(object):
     implements(ICMISSettings)
 
@@ -68,6 +77,7 @@ class CMISSettingsAdapter(object):
     repository_password = ConfigString('repository_password').property()
     repository_connector = ConfigString('repository_connector').property()
     repository_cache = ConfigInteger('repository_cache').property()
+    title_from_plone = ConfigBoolean('title_from_plone').property()
     folder_view = ConfigString('folder_view').property()
     proxy = ConfigString('proxy').property()
 

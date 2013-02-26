@@ -77,9 +77,20 @@ class CMISBrowser(Container):
     repository_password = FieldProperty(ICMISBrowser['repository_password'])
     repository_connector = FieldProperty(ICMISBrowser['repository_connector'])
     repository_cache = FieldProperty(ICMISBrowser['repository_cache'])
+    title_from_plone = FieldProperty(ICMISBrowser['title_from_plone'])
     folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
     _uid = None
+
+    def Title(self, browser=None):
+        if not self.title_from_plone:
+            if browser is None:
+                browser = CMISZopeAPI(self)
+            try:
+                return browser.root.Title()
+            except CMISConnectorError:
+                logger.error('Error while retrieving the title from CMIS')
+        return super(CMISBrowser, self).Title()
 
     def UID(self):
         if self._uid is None:

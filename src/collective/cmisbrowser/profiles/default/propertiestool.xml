@@ -8,7 +8,8 @@
   <property name="repository_user" type="string" purge="False"></property>
   <property name="repository_password" type="string" purge="False"></property>
   <property name="repository_connector" type="string" purge="False"></property>
-  <property name="repository_cache" type="integer" purge="False"></property>
+  <property name="repository_cache" type="int" purge="False">5</property>
+  <property name="title_from_plone" type="boolean" purge="False"></property>
   <property name="folder_view" type="string" purge="False"></property>
   <property name="proxy" type="string" purge="False"></property>
  </object>
