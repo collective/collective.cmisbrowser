@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-18 13:49+0000\n"
+"POT-Creation-Date: 2013-02-26 10:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,12 +32,16 @@ msgstr ""
 msgid "A CMIS content folder"
 msgstr ""
 
-#: ./browser/forms.py:22
+#: ./browser/forms.py:20
 msgid "Add a CMIS Browser"
 msgstr ""
 
 #: ./browser/templates/cmisbrowsererrorview.pt:13
 msgid "An error happened while connecting to the CMIS Repository."
+msgstr ""
+
+#: ./interfaces.py:73
+msgid "Browser title comes Plone instead of CMIS repository"
 msgstr ""
 
 #: ./profiles/default-plone3/types/CMIS_Browser.xml
@@ -55,71 +59,71 @@ msgstr ""
 msgid "CMIS Folder"
 msgstr ""
 
-#: ./interfaces.py:65
+#: ./interfaces.py:62
 msgid "CMIS connection type to the repository"
 msgstr ""
 
-#: ./browser/settings.py:22
+#: ./browser/settings.py:20
 msgid "CMIS default settings"
 msgstr ""
 
-#: ./interfaces.py:47
+#: ./interfaces.py:44
 msgid "CMIS repository URI"
 msgstr ""
 
-#: ./interfaces.py:49
+#: ./interfaces.py:46
 msgid "CMIS repository name"
 msgstr ""
 
-#: ./interfaces.py:54
+#: ./interfaces.py:51
 msgid "CMIS start folder path"
 msgstr ""
 
-#: ./interfaces.py:39
+#: ./interfaces.py:37
 msgid "Connection REST"
 msgstr ""
 
-#: ./interfaces.py:36
+#: ./interfaces.py:34
 msgid "Connection SOAP"
 msgstr ""
 
-#: ./content/cmisbrowser.py:129
+#: ./content/cmisbrowser.py:138
 msgid "Create CMIS Browser"
 msgstr ""
 
-#: ./browser/settings.py:21
+#: ./browser/settings.py:19
 msgid "Default settings used by every CMIS Browser in the site."
 msgstr ""
 
-#: ./browser/forms.py:40
+#: ./browser/forms.py:38
 msgid "Edit CMIS Browser"
 msgstr ""
 
-#: ./interfaces.py:101
+#: ./interfaces.py:103
 msgid "Enable RSS feed"
 msgstr ""
 
-#: ./interfaces.py:55
+#: ./interfaces.py:52
 msgid "Folder in the CMIS repository at which the browser should start, will start at the root of the repository if this is empty."
 msgstr ""
 
-#: ./interfaces.py:82
+#: ./interfaces.py:84
 msgid "HTTP-Proxy to use to access CMIS repository"
 msgstr ""
 
-#: ./interfaces.py:102
+#: ./interfaces.py:104
 msgid "If this is checked, an RSS feed will be available on every CMIS folder."
 msgstr ""
 
-#: ./interfaces.py:50
-msgid "If you have a federated CMIS repository, you have to type you have to type the name of the repository you want to access."
+#: ./interfaces.py:47
+msgid "If you have a federated CMIS repository, you have to type the name of the repository you want to access."
 msgstr ""
 
-#: ./interfaces.py:90
+#: ./interfaces.py:92
 msgid "Password specified, but username missing."
 msgstr ""
 
-#: ./interfaces.py:62
+#: ./interfaces.py:59
 msgid "Password to access CMIS repository"
 msgstr ""
 
@@ -127,7 +131,7 @@ msgstr ""
 msgid "Please check the settings, and the CMIS server status."
 msgstr ""
 
-#: ./interfaces.py:76
+#: ./interfaces.py:78
 msgid "Plone template used to render folders"
 msgstr ""
 
@@ -155,27 +159,31 @@ msgstr ""
 msgid "Repository name"
 msgstr ""
 
-#: ./interfaces.py:77
+#: ./interfaces.py:79
 msgid "Select a default plone template to render folders."
 msgstr ""
 
-#: ./interfaces.py:66
+#: ./interfaces.py:63
 msgid "Select if you want to connect to the CMIS repository using SOAP or REST."
 msgstr ""
 
-#: ./browser/settings.py:20
+#: ./browser/settings.py:18
 msgid "Site wide default settings for CMIS connections"
 msgstr ""
 
-#: ./interfaces.py:71
+#: ./interfaces.py:74
+msgid "Tell if the title of the browser should be the one set in Plone or of the root folder targeted in the CMIS repository."
+msgstr ""
+
+#: ./interfaces.py:68
 msgid "Time in minutes CMIS information should be cached"
 msgstr ""
 
-#: ./interfaces.py:59
+#: ./interfaces.py:56
 msgid "User to access CMIS repository"
 msgstr ""
 
-#: ./interfaces.py:88
+#: ./interfaces.py:90
 msgid "Username specified, but password missing."
 msgstr ""
 
