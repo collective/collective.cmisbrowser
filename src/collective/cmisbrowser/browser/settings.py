@@ -71,13 +71,13 @@ class CMISSettingsAdapter(object):
 
     # Define overridable configuration entries.
     repository_url = ConfigString('repository_url').property()
+    title_from_plone = ConfigBoolean('title_from_plone').property()
     repository_name = ConfigString('repository_name').property()
     repository_path = ConfigString('repository_path').property()
     repository_user = ConfigString('repository_user').property()
     repository_password = ConfigString('repository_password').property()
     repository_connector = ConfigString('repository_connector').property()
     repository_cache = ConfigInteger('repository_cache').property()
-    title_from_plone = ConfigBoolean('title_from_plone').property()
     folder_view = ConfigString('folder_view').property()
     proxy = ConfigString('proxy').property()
 

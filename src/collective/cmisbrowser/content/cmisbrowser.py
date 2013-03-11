@@ -71,13 +71,13 @@ class CMISBrowser(Container):
     security = ClassSecurityInfo()
 
     repository_url = FieldProperty(ICMISBrowser['repository_url'])
+    title_from_plone = FieldProperty(ICMISBrowser['title_from_plone'])
     repository_name = FieldProperty(ICMISBrowser['repository_name'])
     repository_path = FieldProperty(ICMISBrowser['repository_path'])
     repository_user = FieldProperty(ICMISBrowser['repository_user'])
     repository_password = FieldProperty(ICMISBrowser['repository_password'])
     repository_connector = FieldProperty(ICMISBrowser['repository_connector'])
     repository_cache = FieldProperty(ICMISBrowser['repository_cache'])
-    title_from_plone = FieldProperty(ICMISBrowser['title_from_plone'])
     folder_view = FieldProperty(ICMISBrowser['folder_view'])
     proxy = FieldProperty(ICMISBrowser['proxy'])
     _uid = None
