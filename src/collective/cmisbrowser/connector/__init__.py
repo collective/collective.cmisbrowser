@@ -1,3 +1,3 @@
-# Copyright (c) 2012 Vlaamse Overheid. All rights reserved.
+# Copyright (c) 2013 Beleidsdomein Leefmilieu, Natuur en Energie (LNE) and Vlaamse Milieumaatschappij (VMM). All rights reserved.
 # See also LICENSE.txt
 
