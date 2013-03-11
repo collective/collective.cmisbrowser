@@ -117,7 +117,7 @@ msgstr "Indien aangevinkt zal er een RSS feed beschikbaar zijn voor elke CMIS ma
 
 #: ./interfaces.py:47
 msgid "If you have a federated CMIS repository, you have to type the name of the repository you want to access."
-msgstr "Indien je een Fedrarated CMIS Repository gebruikt (één omgeving met verschilende Repositories), dien je de naam van de Repository in te vullen waartoe je toegang wil."
+msgstr "Indien je een Federated CMIS Repository gebruikt (één omgeving met verschilende Repositories), dien je de naam van de Repository in te vullen waartoe je toegang wil."
 
 #: ./interfaces.py:92
 msgid "Password specified, but username missing."
