@@ -143,6 +143,14 @@ msgstr ""
 msgid "Product Version"
 msgstr ""
 
+#: ./browser/templates/cmisbrowserinfoview.pt:22
+msgid "Description"
+msgstr ""
+
+#: ./browser/templates/cmisbrowserinfoview.pt:22
+msgid "Text"
+msgstr ""
+
 #: ./browser/templates/cmisbrowserinfoview.pt:16
 msgid "Repository URL"
 msgstr ""

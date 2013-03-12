@@ -147,6 +147,14 @@ msgstr "Product Versie"
 msgid "Repository URL"
 msgstr "Repository URL"
 
+#: ./browser/templates/cmisbrowserinfoview.pt:22
+msgid "Description"
+msgstr "Beschrijving"
+
+#: ./browser/templates/cmisbrowserinfoview.pt:22
+msgid "Text"
+msgstr "Hoofdtekst"
+
 #: ./browser/templates/cmisbrowserinfoview.pt:27
 msgid "Repository description"
 msgstr "Repository beschrijving"
@@ -173,7 +181,7 @@ msgstr "Standaard CMIS connectie instellingen voor de hele site"
 
 #: ./interfaces.py:74
 msgid "Tell if the title of the browser should be the one set in Plone or of the root folder targeted in the CMIS repository."
-msgstr "Deze optie maakt het mogelijk om de titel van de browser te gebruiken gezet in Plone of de titel van de doelmap in de CMIS Repository te grbruiken"
+msgstr "Deze optie maakt het mogelijk om de titel van de browser te gebruiken gezet in Plone of de titel van de doelmap in de CMIS Repository te gebruiken"
 
 #: ./interfaces.py:68
 msgid "Time in minutes CMIS information should be cached"
