@@ -7,4 +7,7 @@ from plone.app.layout.viewlets import common as base
 class TextViewlet(base.ViewletBase):
 
     def render(self):
-        return self.context.getBody()
+        body = self.context.getBody()
+        if body:
+            return body
+        return u''

@@ -29,7 +29,7 @@
     url_expr="string:${object_url}/edit" visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="Information" action_id="information" category="object" condition_expr=""
+ <action title="Info" action_id="information" category="object" condition_expr=""
     url_expr="string:${object_url}/information.html" visible="True">
   <permission value="Modify portal content"/>
  </action>

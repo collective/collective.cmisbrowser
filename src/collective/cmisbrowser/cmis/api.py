@@ -115,6 +115,9 @@ class CMISZopeAPI(object):
         return self._build(parent=None, contents=results)
 
     def search(self, text, quotable=False, scorable=True):
+        if not text:
+            # No text, return an empty list.
+            return []
         if quotable:
             text = quote(text)
         elif "'" in text:
