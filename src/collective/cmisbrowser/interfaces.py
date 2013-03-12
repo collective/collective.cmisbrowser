@@ -40,13 +40,19 @@ connector_source = SimpleVocabulary([
 class ICMISSettings(Interface):
     """Generic CMIS Settings.
     """
-    repository_url = schema.URI(
-        title=_(u'CMIS repository URI'))
     title_from_plone = schema.Bool(
         title=_(u"Browser title comes Plone instead of CMIS repository"),
         description=_(u'Tell if the title of the browser should be the one set in Plone or of the root folder targeted in the CMIS repository.'),
         default=True,
         required=False)
+    browser_description = schema.Text(
+        title=_(u"Description"),
+        required=False)
+    browser_text = schema.Text(
+        title=_(u"Text"),
+        required=False)
+    repository_url = schema.URI(
+        title=_(u'CMIS repository URI'))
     repository_name = schema.TextLine(
         title=_(u'CMIS repository name'),
         description=_(u'If you have a federated CMIS repository, you have to type '

@@ -70,6 +70,8 @@ class CMISBrowser(Container):
     allow_discussion = False
     security = ClassSecurityInfo()
 
+    browser_description = FieldProperty(ICMISBrowser['browser_description'])
+    browser_text = FieldProperty(ICMISBrowser['browser_text'])
     repository_url = FieldProperty(ICMISBrowser['repository_url'])
     title_from_plone = FieldProperty(ICMISBrowser['title_from_plone'])
     repository_name = FieldProperty(ICMISBrowser['repository_name'])

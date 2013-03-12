@@ -5,6 +5,7 @@ from App.config import getConfiguration
 from Products.CMFCore.utils import getToolByName
 
 from plone.app.controlpanel.form import ControlPanelForm
+from plone.app.form.widgets.wysiwygwidget import WYSIWYGWidget
 from zope.formlib import form
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements, implementer
@@ -19,20 +20,26 @@ class CMISSettings(ControlPanelForm):
     description = _("Default settings used by every CMIS Browser in the site.")
     form_name = _("CMIS default settings")
     form_fields = form.Fields(ICMISSettings)
+    form_fields['browser_text'].custom_widget = WYSIWYGWidget
 
 
 class ConfigString(object):
 
-    def __init__(self, name):
+    def __init__(self, name, is_unicode=False):
         self.name = name
+        self.unicode = is_unicode
 
     def getter(prop, self):
         value = getattr(self._properties, prop.name, None)
         if not value:
-            return self._default.get(prop.name)
+            value = self._default.get(prop.name)
+        if prop.unicode:
+            return unicode(value)
         return value
 
     def setter(prop, self, value):
+        if prop.unicode and isinstance(value, unicode):
+            value = value.encode('utf-8')
         if value is None:
             # Plone properties doesn't support always None
             value = ''
@@ -70,6 +77,8 @@ class CMISSettingsAdapter(object):
         self._properties = properties_tool.cmisbrowser_properties
 
     # Define overridable configuration entries.
+    browser_description = ConfigString('browser_description', True).property()
+    browser_text = ConfigString('browser_text', True).property()
     repository_url = ConfigString('repository_url').property()
     title_from_plone = ConfigBoolean('title_from_plone').property()
     repository_name = ConfigString('repository_name').property()

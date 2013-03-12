@@ -2,6 +2,8 @@
 <object name="portal_properties" meta_type="Plone Properties Tool">
  <object name="cmisbrowser_properties" meta_type="Plone Property Sheet" purge="False">
   <property name="title">CMISBrowser properties</property>
+  <property name="browser_description" type="string" purge="False"></property>
+  <property name="browser_text" type="string" purge="False"></property>
   <property name="repository_url" type="string" purge="False"></property>
   <property name="repository_name" type="string" purge="False"></property>
   <property name="repository_path" type="string" purge="False"></property>
@@ -9,7 +11,7 @@
   <property name="repository_password" type="string" purge="False"></property>
   <property name="repository_connector" type="string" purge="False"></property>
   <property name="repository_cache" type="int" purge="False">5</property>
-  <property name="title_from_plone" type="boolean" purge="False"></property>
+  <property name="title_from_plone" type="boolean" purge="True">True</property>
   <property name="folder_view" type="string" purge="False"></property>
   <property name="proxy" type="string" purge="False"></property>
  </object>

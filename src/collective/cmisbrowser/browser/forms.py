@@ -3,6 +3,7 @@
 
 from plone.app.content.interfaces import INameFromTitle
 from plone.app.form.base import AddForm, EditForm
+from plone.app.form.widgets.wysiwygwidget import WYSIWYGWidget
 from zope.component import createObject
 from zope.formlib.form import applyChanges, Fields, setUpEditWidgets
 from zope.i18nmessageid import MessageFactory
@@ -19,6 +20,7 @@ _ = MessageFactory('collective.cmisbrowser')
 class CMISBrowserAddForm(AddForm):
     label = _(u'Add a CMIS Browser')
     form_fields = Fields(INameFromTitle, ICMISSettings)
+    form_fields['browser_text'].custom_widget = WYSIWYGWidget
 
     def setUpWidgets(self, ignore_request=False):
         # We setup the add form like an edit form, in order to read
@@ -37,6 +39,7 @@ class CMISBrowserAddForm(AddForm):
 class CMISBrowserEditForm(EditForm):
     label = _(u'Edit CMIS Browser')
     form_fields = Fields(INameFromTitle, ICMISSettings, IRSSSetting)
+    form_fields['browser_text'].custom_widget = WYSIWYGWidget
 
 
 # The default title adapter is used by the add form

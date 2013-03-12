@@ -144,4 +144,14 @@
      provides="..interfaces.ICMISSettings"
      />
 
+
+   <!-- Viewlet -->
+   <browser:viewlet
+     name='cmisbrowser.text'
+     for='..interfaces.ICMISRootFolder'
+     manager="plone.app.layout.viewlets.interfaces.IAboveContentBody"
+     class=".viewlets.TextViewlet"
+     permission="zope2.View"
+     />
+
 </configure>

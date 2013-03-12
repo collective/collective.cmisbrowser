@@ -325,6 +325,14 @@ class CMISRootFolder(CMISFolder):
             return browser.Title()
         return super(CMISRootFolder, self).Title()
 
+    def Description(self):
+        browser = self.getCMISBrowser()
+        return browser.browser_description
+
+    def getBody(self):
+        browser = self.getCMISBrowser()
+        return browser.browser_text
+
     def getId(self):
         # The root must have an id of None (as they are the root of the URL).
         return None
