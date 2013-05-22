@@ -74,8 +74,8 @@ Add a *CMIS Browser*
 ===============
 
 After installing you will be able to add a *CMIS Browser* in your Plone
-site. Configuration can be done on the *CMIS Browser* itself and/or you can set
-a site wide configuration.
+site from the *Add new...* drop-down menu. Configuration can be done on
+the *CMIS Browser* itself and/or you can set a site wide configuration.
 
 Configuration
 =============
