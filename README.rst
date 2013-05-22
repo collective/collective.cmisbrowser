@@ -31,8 +31,10 @@ Update your buildout profile to include the following eggs and zcml:
       ...
       collective.cmisbrowser
 
-**Important** When using python 2.4.x you will also need to add
-*httpsproxy_urllib2* as an egg.
+**Important:**
+
+When using python 2.4.x you will also need to add *httpsproxy_urllib2*
+as an egg.
 
 Run the buildout
 ----------------
@@ -72,7 +74,7 @@ Add a *CMIS Browser*
 ===============
 
 After installing you will be able to add a *CMIS Browser* in your Plone
-site. Configuration can be done on the Browser itself and/or you can set
+site. Configuration can be done on the *CMIS Browser* itself and/or you can set
 a site wide configuration.
 
 Configuration
@@ -165,7 +167,7 @@ default values of the following parameters:
 
  - An interval between cache cleanups in seconds.
 
-Change the values and click the ‘Save’ button.
+Change the values and click the *Save* button.
 
 Compatibility
 =============
