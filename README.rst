@@ -20,9 +20,7 @@ Installation
 Update buildout profile
 -----------------------
 
-Update your buildout profile to include the following eggs and zcml:
-
-::
+Update your buildout profile to include the following eggs and zcml::
 
   eggs +=
       ...
@@ -39,9 +37,7 @@ as an egg.
 Run the buildout
 ----------------
 
-Run the buildout to reflect the changes you made to the profile.
-
-::
+Run the buildout to reflect the changes you made to the profile::
 
   $ bin/buildout -v
 
@@ -59,8 +55,8 @@ Through the ZMI
 
  - Click the *install* button.
 
-Through the *Plone control panel*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Through the Plone control panel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  - Go to *Site Setup*.
 
@@ -70,8 +66,8 @@ Through the *Plone control panel*
 
  - Click the *Install* button.
 
-Add a *CMIS Browser*
-===============
+Add a CMIS Browser
+==================
 
 After installing you will be able to add a *CMIS Browser* in your Plone
 site from the *Add new...* drop-down menu. Configuration can be done on
